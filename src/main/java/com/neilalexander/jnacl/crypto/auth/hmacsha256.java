@@ -25,17 +25,18 @@ public class hmacsha256 {
 
     for (i = 0; i < 32; ++i) h[i] = iv[i];
 
-    for (i = 0; i < 32; ++i) padded[i] = (byte) ((k[i] ^ 0x36) & 0xff);
+    for (i = 0; i < 32; ++i) padded[i] = (byte) ((k[i] ^ 0x36));
     for (i = 32; i < 64; ++i) padded[i] = 0x36;
 
-    crypto_hashblocks(h, padded, 64);
-    crypto_hashblocks(h, in, inlen);
+    int offset = 0;
+    crypto_hashblocks(h, padded, 0, 64);
+    crypto_hashblocks(h, in, offset, inlen);
 
-    in += inlen;
+    offset += inlen;
     inlen &= 63;
-    in -= inlen;
+    offset -= inlen;
 
-    for (i = 0;i < inlen;++i) padded[i] = in[i];
+    for (i = 0;i < inlen;++i) padded[i] = in[i + offset];
     padded[inlen] = (byte)0x80;
 
     if (inlen < 56) {
@@ -48,7 +49,7 @@ public class hmacsha256 {
       padded[61] = (byte) (bits >> 16);
       padded[62] = (byte) (bits >> 8);
       padded[63] = (byte) (bits);
-      crypto_hashblocks(h, padded, 64);
+      crypto_hashblocks(h, padded, 0, 64);
     } else {
       for (i = inlen + 1;i < 120;++i) padded[i] = 0;
       padded[120] = (byte) (bits >> 56);
@@ -59,7 +60,7 @@ public class hmacsha256 {
       padded[125] = (byte) (bits >> 16);
       padded[126] = (byte) (bits >> 8);
       padded[127] = (byte) (bits);
-      crypto_hashblocks(h, padded, 128);
+      crypto_hashblocks(h, padded, 0, 128);
     }
 
     for (i = 0;i < 32;++i) padded[i] = (byte)(k[i] ^ 0x5c);
@@ -72,7 +73,7 @@ public class hmacsha256 {
     padded[64 + 32] = (byte)0x80;
     padded[64 + 62] = 3;
 
-    crypto_hashblocks(out, padded, 128);
+    crypto_hashblocks(out, padded, 0, 128);
 
     return 0;
   }

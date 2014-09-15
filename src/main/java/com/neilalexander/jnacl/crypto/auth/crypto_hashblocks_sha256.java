@@ -35,44 +35,36 @@ public class crypto_hashblocks_sha256 {
     x[3+offset] = (byte) u;
   }
 
-  static int crypto_hashblocks(byte[] statebytes,byte[] in,int inlen) {
+  public static int crypto_hashblocks(byte[] statebytes, byte[] in, int offset, int inlen) {
     int[] state = new int[8];
-    int r0;
-    int r1;
-    int r2;
-    int r3;
-    int r4;
-    int r5;
-    int r6;
-    int r7;
 
-    r0 = load_bigendian(statebytes ,  0); state[0] = r0;
-    r1 = load_bigendian(statebytes ,  4); state[1] = r1;
-    r2 = load_bigendian(statebytes ,  8); state[2] = r2;
-    r3 = load_bigendian(statebytes , 12); state[3] = r3;
-    r4 = load_bigendian(statebytes , 16); state[4] = r4;
-    r5 = load_bigendian(statebytes , 20); state[5] = r5;
-    r6 = load_bigendian(statebytes , 24); state[6] = r6;
-    r7 = load_bigendian(statebytes , 28); state[7] = r7;
+    int r0 = load_bigendian(statebytes ,  0); state[0] = r0;
+    int r1 = load_bigendian(statebytes ,  4); state[1] = r1;
+    int r2 = load_bigendian(statebytes ,  8); state[2] = r2;
+    int r3 = load_bigendian(statebytes , 12); state[3] = r3;
+    int r4 = load_bigendian(statebytes , 16); state[4] = r4;
+    int r5 = load_bigendian(statebytes , 20); state[5] = r5;
+    int r6 = load_bigendian(statebytes , 24); state[6] = r6;
+    int r7 = load_bigendian(statebytes , 28); state[7] = r7;
 
     int inIdx = 0;
     while (inlen >= 64) {
-      int w0  = load_bigendian(in , inIdx +  0);
-      int w1  = load_bigendian(in , inIdx +  4);
-      int w2  = load_bigendian(in , inIdx +  8);
-      int w3  = load_bigendian(in , inIdx + 12);
-      int w4  = load_bigendian(in , inIdx + 16);
-      int w5  = load_bigendian(in , inIdx + 20);
-      int w6  = load_bigendian(in , inIdx + 24);
-      int w7  = load_bigendian(in , inIdx + 28);
-      int w8  = load_bigendian(in , inIdx + 32);
-      int w9  = load_bigendian(in , inIdx + 36);
-      int w10 = load_bigendian(in , inIdx + 40);
-      int w11 = load_bigendian(in , inIdx + 44);
-      int w12 = load_bigendian(in , inIdx + 48);
-      int w13 = load_bigendian(in , inIdx + 52);
-      int w14 = load_bigendian(in , inIdx + 56);
-      int w15 = load_bigendian(in , inIdx + 60);
+      int w0  = load_bigendian(in , offset + inIdx +  0);
+      int w1  = load_bigendian(in , offset + inIdx +  4);
+      int w2  = load_bigendian(in , offset + inIdx +  8);
+      int w3  = load_bigendian(in , offset + inIdx + 12);
+      int w4  = load_bigendian(in , offset + inIdx + 16);
+      int w5  = load_bigendian(in , offset + inIdx + 20);
+      int w6  = load_bigendian(in , offset + inIdx + 24);
+      int w7  = load_bigendian(in , offset + inIdx + 28);
+      int w8  = load_bigendian(in , offset + inIdx + 32);
+      int w9  = load_bigendian(in , offset + inIdx + 36);
+      int w10 = load_bigendian(in , offset + inIdx + 40);
+      int w11 = load_bigendian(in , offset + inIdx + 44);
+      int w12 = load_bigendian(in , offset + inIdx + 48);
+      int w13 = load_bigendian(in , offset + inIdx + 52);
+      int w14 = load_bigendian(in , offset + inIdx + 56);
+      int w15 = load_bigendian(in , offset + inIdx + 60);
 
       r7 += ((((r4) >> (6)) | ((r4) << (32 - (6)))) ^ (((r4) >> (11)) | ((r4) << (32 - (11)))) ^ (((r4) >> (25)) | ((r4) << (32 - (25))))) + ((r4 & r5) ^ (~r4 & r6)) + round[0 + 0] + w0;
       r3 += r7;
