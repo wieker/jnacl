@@ -20,19 +20,19 @@ public class crypto_hashblocks_sha256 {
      , 0x748f82ee , 0x78a5636f , 0x84c87814 , 0x8cc70208
      , 0x90befffa , 0xa4506ceb , 0xbef9a3f7 , 0xc67178f2
   } ;
-  
-  private static int load_bigendian(byte[] x, int offset) {
+
+  static int load_bigendian(byte[] x, int offset) {
     return  (int)(x[3+offset])&0xff
         | (((int)(x[2+offset])&0xff) << 8)
         | (((int)(x[1+offset])&0xff) << 16)
         | (((int)(x[0+offset])&0xff) << 24);
   }
 
-  private static void store_bigendian(byte[] x, int offset, int u) {
-    x[0+offset] = (byte) u; u >>>= 8;
-    x[1+offset] = (byte) u; u >>>= 8;
+  static void store_bigendian(byte[] x, int offset, int u) {
+    x[3+offset] = (byte) u; u >>>= 8;
     x[2+offset] = (byte) u; u >>>= 8;
-    x[3+offset] = (byte) u;
+    x[1+offset] = (byte) u; u >>>= 8;
+    x[0+offset] = (byte) u;
   }
 
   public static int crypto_hashblocks(byte[] statebytes, byte[] in, int offset, int inlen) {
