@@ -8,3 +8,7 @@ Supports the following crypto primitives:
 * curve25519xsalsa20poly1305 
 * hmacsha256 (work in progress)
 
+License
+-------
+
+[The BSD 2-Clause License](http://opensource.org/licenses/bsd-license.php)
