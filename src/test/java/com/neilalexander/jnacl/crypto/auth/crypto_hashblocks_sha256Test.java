@@ -2,6 +2,7 @@ package com.neilalexander.jnacl.crypto.auth;
 
 import org.testng.annotations.Test;
 
+import static com.neilalexander.jnacl.NaCl.asHex;
 import static org.fest.assertions.Assertions.assertThat;
 
 public class crypto_hashblocks_sha256Test {

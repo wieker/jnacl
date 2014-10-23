@@ -40,24 +40,24 @@ public class hmacsha256 {
 
     if (inlen < 56) {
       for (i = inlen + 1; i < 56; ++i) padded[i] = 0;
-      padded[56] = (byte) ((bits >> 56) & 0xffL);
-      padded[57] = (byte) ((bits >> 48) & 0xFFL);
-      padded[58] = (byte) ((bits >> 40) & 0xFFL);
-      padded[59] = (byte) ((bits >> 32) & 0xFFL);
-      padded[60] = (byte) ((bits >> 24) & 0xFFL);
-      padded[61] = (byte) ((bits >> 16) & 0xFFL);
-      padded[62] = (byte) ((bits >> 8) & 0xFFL);
+      padded[56] = (byte) ((bits >>> 56) & 0xffL);
+      padded[57] = (byte) ((bits >>> 48) & 0xFFL);
+      padded[58] = (byte) ((bits >>> 40) & 0xFFL);
+      padded[59] = (byte) ((bits >>> 32) & 0xFFL);
+      padded[60] = (byte) ((bits >>> 24) & 0xFFL);
+      padded[61] = (byte) ((bits >>> 16) & 0xFFL);
+      padded[62] = (byte) ((bits >>> 8) & 0xFFL);
       padded[63] = (byte) ((bits) & 0xFFL);
       crypto_hashblocks(h, padded, 0, 64);
     } else {
       for (i = inlen + 1; i < 120; ++i) padded[i] = 0;
-      padded[120] = (byte) ((bits >> 56) & 0xFFL);
-      padded[121] = (byte) ((bits >> 48) & 0xFFL);
-      padded[122] = (byte) ((bits >> 40) & 0xFFL);
-      padded[123] = (byte) ((bits >> 32) & 0xFFL);
-      padded[124] = (byte) ((bits >> 24) & 0xFFL);
-      padded[125] = (byte) ((bits >> 16) & 0xFFL);
-      padded[126] = (byte) ((bits >> 8) & 0xFFL);
+      padded[120] = (byte) ((bits >>> 56) & 0xFFL);
+      padded[121] = (byte) ((bits >>> 48) & 0xFFL);
+      padded[122] = (byte) ((bits >>> 40) & 0xFFL);
+      padded[123] = (byte) ((bits >>> 32) & 0xFFL);
+      padded[124] = (byte) ((bits >>> 24) & 0xFFL);
+      padded[125] = (byte) ((bits >>> 16) & 0xFFL);
+      padded[126] = (byte) ((bits >>> 8) & 0xFFL);
       padded[127] = (byte) ((bits) & 0xFFL);
       crypto_hashblocks(h, padded, 0, 128);
     }

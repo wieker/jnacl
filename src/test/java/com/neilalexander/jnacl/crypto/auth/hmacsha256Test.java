@@ -15,7 +15,7 @@ public class hmacsha256Test {
     byte[] buf = new byte[32];
     hmacsha256.crypto_auth(buf, message, message.length, secret);
 
-    assertThat(asHex(buf)).isEqualTo("04E1A5D1EDD8585C7C5ACD6E487F336A8ED50DE2DDB6946DAD8EE26BCE6DD54C");
+    assertThat(asHex(buf)).isEqualTo("04e1a5d1edd8585c7c5acd6e487f336a8ed50de2ddb6946dad8ee26bce6dd54c");
   }
 
   @Test
