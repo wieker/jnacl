@@ -1,6 +1,13 @@
 package com.neilalexander.jnacl.crypto.auth;
 
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.util.Random;
 
 import static com.neilalexander.jnacl.NaCl.asHex;
 import static org.fest.assertions.Assertions.assertThat;
@@ -9,6 +16,12 @@ public class hmacsha256Test {
 
   private static byte[] secret = "0cba66066896ffb51e92bc3c36ffa627".getBytes();
   private static byte[] message = "a secret message".getBytes();
+  private Random simpleRandom;
+
+  @BeforeMethod
+  public void setUp() throws Exception {
+    simpleRandom = new Random(System.currentTimeMillis());
+  }
 
   @Test
   public void happy_path() throws Exception {
@@ -83,6 +96,58 @@ public class hmacsha256Test {
 
     int valid = hmacsha256.crypto_auth_verify(a, c, c.length, key);
     assertThat(valid).isEqualTo(0);
+  }
+
+  @Test
+  public void compare_with_standard_java_runtime_hmac_implementation_when_size_zero() throws InvalidKeyException, NoSuchAlgorithmException {
+    byte[] key = new byte[]{
+        0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08
+        , 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0x10
+        , 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18
+        , 0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f, 0x20
+    };
+
+    Mac jreMac = createMacFromJavaxCryptoProvider(key);
+
+    byte[] buf = new byte[32];
+    hmacsha256.crypto_auth(buf, new byte[]{}, 0, key);
+
+    assertThat(buf).isEqualTo(jreMac.doFinal());
+  }
+
+  @Test(invocationCount = 1000)
+  public void compare_with_standard_java_runtime_hmac_implementation_with_varying_buffer_sizes() throws InvalidKeyException, NoSuchAlgorithmException {
+    byte[] key = new byte[]{
+        0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08
+        , 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0x10
+        , 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18
+        , 0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f, 0x20
+    };
+
+    byte[] testData = createTestData();
+
+    Mac jreMac = createMacFromJavaxCryptoProvider(key);
+    jreMac.update(testData);
+
+    byte[] buf = new byte[32];
+    hmacsha256.crypto_auth(buf, testData, testData.length, key);
+
+    assertThat(buf).isEqualTo(jreMac.doFinal());
+  }
+
+  private byte[] createTestData() {
+    int smallest_prime_number_with_5_digits = 10007;
+    int size = simpleRandom.nextInt(smallest_prime_number_with_5_digits);
+    byte[] testData = new byte[size];
+    simpleRandom.nextBytes(testData);
+    return testData;
+  }
+
+  private Mac createMacFromJavaxCryptoProvider(byte[] key) throws NoSuchAlgorithmException, InvalidKeyException {
+    Mac sha256_HMAC = Mac.getInstance("HmacSHA256");
+    SecretKeySpec secret_key = new SecretKeySpec(key, "HmacSHA256");
+    sha256_HMAC.init(secret_key);
+    return sha256_HMAC;
   }
 
 }
