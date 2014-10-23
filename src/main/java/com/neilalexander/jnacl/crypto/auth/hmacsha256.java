@@ -2,7 +2,7 @@ package com.neilalexander.jnacl.crypto.auth;
 
 import com.neilalexander.jnacl.crypto.verify_32;
 
-import static com.neilalexander.jnacl.crypto.auth.crypto_hashblocks_sha256.crypto_hashblocks;
+import static com.neilalexander.jnacl.crypto.hashblocks.sha256.crypto_hashblocks;
 
 public class hmacsha256 {
 

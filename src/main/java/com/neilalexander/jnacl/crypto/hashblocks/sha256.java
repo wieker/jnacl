@@ -1,22 +1,22 @@
-package com.neilalexander.jnacl.crypto.auth;
+package com.neilalexander.jnacl.crypto.hashblocks;
 
-public class crypto_hashblocks_sha256 {
+public class sha256 {
 
   static int load_bigendian(byte[] x, int offset) {
     return  (int)(x[3+offset])&0xff
         | (((int)(x[2+offset])&0xff) << 8)
         | (((int)(x[1+offset])&0xff) << 16)
-        | (((int)(x[0+offset])&0xff) << 24);
+        | (((int)(x[offset])&0xff) << 24);
   }
 
   static void store_bigendian(byte[] x, int offset, int u) {
     x[3+offset] = (byte) u; u >>>= 8;
     x[2+offset] = (byte) u; u >>>= 8;
     x[1+offset] = (byte) u; u >>>= 8;
-    x[0+offset] = (byte) u;
+    x[offset] = (byte) u;
   }
 
-  static int crypto_hashblocks(byte[] statebytes, byte[] in, int offset, int inlen) {
+  public static int crypto_hashblocks(byte[] statebytes, byte[] in, int offset, int inlen) {
     int[] state = new int[8];
     int T1;
     int T2;
@@ -33,7 +33,7 @@ public class crypto_hashblocks_sha256 {
     int idx = 0;
 
     while (inlen >= 64) {
-      int w0 = load_bigendian(in , idx + offset + 0);
+      int w0 = load_bigendian(in , idx + offset);
       int w1 = load_bigendian(in , idx + offset + 4);
       int w2 = load_bigendian(in , idx + offset + 8);
       int w3 = load_bigendian(in , idx + offset + 12);
