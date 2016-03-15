@@ -46,6 +46,6 @@ public class NaClTest {
 
     assertThat(NaCl.asHex(in)).isEqualTo("6869");
     assertThat(NaCl.asHex(foo)).isEqualTo("00000000000000000000000000000000c0267362f8612dba2bd704aae3f6da44eaed");
-    assertThat(NaCl.asHex(bar)).isEqualTo("6869");
+    assertThat(NaCl.asHex(bar)).isEqualTo("6869"); //commit
   }
 }
