@@ -1,6 +1,7 @@
 package org.allesoft.messenger;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
@@ -12,7 +13,7 @@ public class AddWin extends JFrame {
     public AddWin(RosterTableModel model) {
         super("Add contact");
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        setSize(400, 200);
+        //setSize(400, 200);
 
         JPanel content = new JPanel();
         content.setLayout(new BoxLayout(content, BoxLayout.PAGE_AXIS));
@@ -30,6 +31,7 @@ public class AddWin extends JFrame {
 
         add(content);
 
+        pack();
         setVisible(true);
     }
 }

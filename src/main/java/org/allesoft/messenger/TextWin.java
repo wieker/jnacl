@@ -13,7 +13,7 @@ public class TextWin extends JFrame {
     public TextWin(String userId) {
         super("Add contact");
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        setSize(400, 200);
+        //setSize(400, 200);
 
         JPanel content = new JPanel();
         content.setLayout(new BoxLayout(content, BoxLayout.PAGE_AXIS));
@@ -35,6 +35,7 @@ public class TextWin extends JFrame {
 
         add(content);
 
+        pack();
         setVisible(true);
     }
 }
