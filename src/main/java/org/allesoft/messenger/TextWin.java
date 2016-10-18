@@ -7,6 +7,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
+import java.security.SecureRandom;
 
 /**
  * Created by kabramovich on 18.10.2016.
@@ -39,19 +40,19 @@ public class TextWin extends JFrame {
         addContactButton.addActionListener((e) -> {
             String text = newMessageField.getText();
             conversationArea.append(LineSeparator.Unix + "My: " + text);
-            byte[] empty = new byte[256];
-            for (int j = 0; j < empty.length; j ++) {
-                empty[j] = 'x';
-            }
-            byte[] chars = SwingUI.naCl.encrypt(text.getBytes(), empty);
+            byte[] nonce = new byte[NaCl.crypto_secretbox_NONCEBYTES];
+            SecureRandom rng = new SecureRandom();
+            rng.nextBytes(nonce);
+            byte[] plain = text.getBytes();
+            int pktCount = (plain.length + 1 + NaCl.crypto_secretbox_NONCEBYTES + NaCl.crypto_secretbox_ZEROBYTES) / 256 + 1;
+            byte[] out = new byte[pktCount * 256];
+            byte[] chars = SwingUI.naCl.encrypt(text.getBytes(), nonce);
+            System.arraycopy(nonce, 0, out, 0, NaCl.crypto_secretbox_NONCEBYTES);
+            out[NaCl.crypto_secretbox_NONCEBYTES] = (byte) chars.length;
+            System.arraycopy(chars, 0, out, NaCl.crypto_secretbox_NONCEBYTES + 1, chars.length);
             newMessageField.setText("");
             try {
-                int i = 0;
-                for (; i <= chars.length - empty.length; i += empty.length) {
-                    SwingUI.connection.getOutputStream().write(chars, i, empty.length);
-                }
-                SwingUI.connection.getOutputStream().write(chars, i, chars.length - i);
-                SwingUI.connection.getOutputStream().write(empty, 0, empty.length - chars.length + i);
+                SwingUI.connection.getOutputStream().write(out);
             } catch (IOException x) {
                 System.out.println("send error");
             }

@@ -32,11 +32,11 @@ import com.neilalexander.jnacl.crypto.curve25519xsalsa20poly1305;
 import java.util.Formatter;
 
 public class NaCl {
-  static final int crypto_secretbox_KEYBYTES = 32;
-  static final int crypto_secretbox_NONCEBYTES = 24;
-  static final int crypto_secretbox_ZEROBYTES = 32;
-  static final int crypto_secretbox_BOXZEROBYTES = 16;
-  static final int crypto_secretbox_BEFORENMBYTES = 32;
+  public static final int crypto_secretbox_KEYBYTES = 32;
+  public static final int crypto_secretbox_NONCEBYTES = 24;
+  public static final int crypto_secretbox_ZEROBYTES = 32;
+  public static final int crypto_secretbox_BOXZEROBYTES = 16;
+  public static final int crypto_secretbox_BEFORENMBYTES = 32;
 
   private byte[] precomputed = new byte[crypto_secretbox_BEFORENMBYTES];
 

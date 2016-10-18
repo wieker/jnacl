@@ -8,6 +8,7 @@ import org.allesoft.jserver.Daemon;
 import javax.swing.*;
 import java.io.IOException;
 import java.net.Socket;
+import java.security.SecureRandom;
 
 /**
  * Created by kabramovich on 18.10.2016.
@@ -28,11 +29,10 @@ public class SwingUI {
                 try {
                     while (true) {
                         byte[] packet = Daemon.loopPacket(connection.getInputStream());
-                        byte[] empty = new byte[256];
-                        for (int j = 0; j < empty.length; j ++) {
-                            empty[j] = 'x';
-                        }
-                        byte[] decoded = naCl.decrypt(packet, empty);
+                        int length = packet[NaCl.crypto_secretbox_NONCEBYTES];
+                        byte[] chars = new byte[length];
+                        System.arraycopy(packet, NaCl.crypto_secretbox_NONCEBYTES + 1, chars, 0, length);
+                        byte[] decoded = naCl.decrypt(chars, packet);
                         if (currentArea != null) {
                             SwingUtilities.invokeLater(() -> {
                                 currentArea.append(LineSeparator.Unix + new String(decoded));
