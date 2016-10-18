@@ -11,6 +11,7 @@ import java.security.SecureRandom;
  * Created by kabramovich on 18.10.2016.
  */
 public class TextWin extends JFrame {
+
     public TextWin(String userId) {
         super("Conversation with " + userId);
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -22,13 +23,10 @@ public class TextWin extends JFrame {
         JTextArea conversationArea = new JTextArea();
         conversationArea.setText("Conversation with " + userId);
         content.add(conversationArea);
-        SwingUI.currentArea = conversationArea;
-        InternalState.peerPublicKey = NaCl.getBinary(userId);
-        try {
-            InternalState.naCl = new NaCl(InternalState.privateKey, InternalState.peerPublicKey);
-        } catch (Exception x) {
-            System.out.println("NaCL exception");
-        }
+        NaCl naCl = createNaCl(userId);
+        InternalState.conversations.add((packet) -> {
+            TextWin.this.receive(naCl, conversationArea, packet);
+        });
 
         JTextField newMessageField = new JTextField();
         newMessageField.setText("");
@@ -38,22 +36,9 @@ public class TextWin extends JFrame {
         addContactButton.addActionListener((e) -> {
             String text = newMessageField.getText();
             conversationArea.append(LineSeparator.Unix + "My: " + text);
-            byte[] nonce = new byte[NaCl.crypto_secretbox_NONCEBYTES];
-            SecureRandom rng = new SecureRandom();
-            rng.nextBytes(nonce);
-            byte[] plain = text.getBytes();
-            int pktCount = (plain.length + 1 + NaCl.crypto_secretbox_NONCEBYTES + NaCl.crypto_secretbox_ZEROBYTES) / 256 + 1;
-            byte[] out = new byte[pktCount * 256];
-            byte[] chars = InternalState.naCl.encrypt(text.getBytes(), nonce);
-            System.arraycopy(nonce, 0, out, 0, NaCl.crypto_secretbox_NONCEBYTES);
-            out[NaCl.crypto_secretbox_NONCEBYTES] = (byte) chars.length;
-            System.arraycopy(chars, 0, out, NaCl.crypto_secretbox_NONCEBYTES + 1, chars.length);
             newMessageField.setText("");
-            try {
-                InternalState.connection.getOutputStream().write(out);
-            } catch (IOException x) {
-                System.out.println("send error");
-            }
+
+            sendBytes(naCl, userId, text);
         });
         content.add(addContactButton);
 
@@ -61,5 +46,57 @@ public class TextWin extends JFrame {
 
         pack();
         setVisible(true);
+    }
+
+    void receive(NaCl naCl, JTextArea conversation, byte[] packet) {
+        int length = packet[NaCl.crypto_secretbox_NONCEBYTES];
+        byte[] chars = new byte[length];
+        System.arraycopy(packet, NaCl.crypto_secretbox_NONCEBYTES + 1, chars, 0, length);
+        byte[] decoded = naCl.decrypt(chars, packet);
+        byte[] dstKey = new byte[NaCl.crypto_secretbox_KEYBYTES];
+        System.arraycopy(decoded, 0, dstKey, 0, NaCl.crypto_secretbox_KEYBYTES);
+        for (int i = 0; i < dstKey.length; i ++) {
+            if (InternalState.publicKey[i] != dstKey[i]) {
+                return;
+            }
+        }
+        if (conversation != null) {
+            SwingUtilities.invokeLater(() -> {
+                conversation.append(LineSeparator.Unix + new String(decoded,
+                        NaCl.crypto_secretbox_KEYBYTES, decoded.length - NaCl.crypto_secretbox_KEYBYTES));
+            });
+        }
+    }
+
+    private void sendBytes(NaCl naCl, String userId, String text) {
+        byte[] nonce = new byte[NaCl.crypto_secretbox_NONCEBYTES];
+        SecureRandom rng = new SecureRandom();
+        rng.nextBytes(nonce);
+        byte[] plain = text.getBytes();
+        byte[] binaryId = NaCl.getBinary(userId);
+        int pktCount = (plain.length + 1 + NaCl.crypto_secretbox_KEYBYTES + NaCl.crypto_secretbox_NONCEBYTES + NaCl.crypto_secretbox_ZEROBYTES) / 256 + 1;
+        byte[] out = new byte[pktCount * 256];
+        byte[] finalPlain = new byte[plain.length + binaryId.length];
+        System.arraycopy(binaryId, 0, finalPlain, 0, NaCl.crypto_secretbox_KEYBYTES);
+        System.arraycopy(plain, 0, finalPlain, NaCl.crypto_secretbox_KEYBYTES, plain.length);
+        byte[] chars = naCl.encrypt(finalPlain, nonce);
+        System.arraycopy(nonce, 0, out, 0, NaCl.crypto_secretbox_NONCEBYTES);
+        out[NaCl.crypto_secretbox_NONCEBYTES] = (byte) chars.length;
+        System.arraycopy(chars, 0, out, NaCl.crypto_secretbox_NONCEBYTES + 1, chars.length);
+        try {
+            InternalState.connection.getOutputStream().write(out);
+        } catch (IOException x) {
+            System.out.println("send error");
+        }
+    }
+
+    private NaCl createNaCl(String userId) {
+        NaCl naCl = null;
+        try {
+            naCl = new NaCl(InternalState.privateKey, NaCl.getBinary(userId));
+        } catch (Exception x) {
+            System.out.println("NaCL exception");
+        }
+        return naCl;
     }
 }

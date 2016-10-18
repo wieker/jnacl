@@ -1,11 +1,9 @@
 package org.allesoft.messenger;
 
-import com.neilalexander.jnacl.NaCl;
 import com.neilalexander.jnacl.crypto.curve25519xsalsa20poly1305;
 import com.sun.org.apache.xml.internal.serialize.LineSeparator;
 import org.allesoft.jserver.Daemon;
 
-import javax.swing.*;
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -18,8 +16,7 @@ public class InternalState {
     public static Socket connection;
     public static byte[] publicKey = new byte[32];
     public static byte[] privateKey = new byte[32];
-    public static byte[] peerPublicKey = new byte[32];
-    public static NaCl naCl;
+    public static List<MessageListener> conversations = new ArrayList<>();
 
     public static void init() {
         File privateKeyFile = new File("private_key");
@@ -94,14 +91,8 @@ public class InternalState {
                 try {
                     while (true) {
                         byte[] packet = Daemon.loopPacket(connection.getInputStream());
-                        int length = packet[NaCl.crypto_secretbox_NONCEBYTES];
-                        byte[] chars = new byte[length];
-                        System.arraycopy(packet, NaCl.crypto_secretbox_NONCEBYTES + 1, chars, 0, length);
-                        byte[] decoded = naCl.decrypt(chars, packet);
-                        if (SwingUI.currentArea != null) {
-                            SwingUtilities.invokeLater(() -> {
-                                SwingUI.currentArea.append(LineSeparator.Unix + new String(decoded));
-                            });
+                        for (MessageListener l : conversations) {
+                            l.receive(packet);
                         }
                     }
                 } catch (IOException e) {
@@ -112,4 +103,5 @@ public class InternalState {
             System.out.println("server error");
         }
     }
+
 }
