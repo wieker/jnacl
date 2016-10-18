@@ -1,5 +1,7 @@
 package org.allesoft.messenger;
 
+import com.neilalexander.jnacl.NaCl;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -18,6 +20,9 @@ public class MainWin extends JFrame {
 
         JPanel content = new JPanel();
         content.setLayout(new BoxLayout(content, BoxLayout.PAGE_AXIS));
+
+        JTextField publicKeyLabel = new JTextField(NaCl.asHex(SwingUI.publicKey));
+        content.add(publicKeyLabel);
 
         RosterTableModel rosterTableModel = new RosterTableModel();
         JTable rosterTable = new JTable(rosterTableModel);

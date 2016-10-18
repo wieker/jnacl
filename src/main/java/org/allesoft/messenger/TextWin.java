@@ -1,5 +1,6 @@
 package org.allesoft.messenger;
 
+import com.neilalexander.jnacl.NaCl;
 import com.sun.org.apache.xml.internal.serialize.LineSeparator;
 
 import javax.swing.*;
@@ -23,6 +24,12 @@ public class TextWin extends JFrame {
         conversationArea.setText("Conversation with " + userId);
         content.add(conversationArea);
         SwingUI.currentArea = conversationArea;
+        SwingUI.peerPublicKey = NaCl.getBinary(userId);
+        try {
+            SwingUI.naCl = new NaCl(SwingUI.privateKey, SwingUI.peerPublicKey);
+        } catch (Exception x) {
+            System.out.println("NaCL exception");
+        }
 
         JTextField newMessageField = new JTextField();
         newMessageField.setText("");
@@ -32,11 +39,11 @@ public class TextWin extends JFrame {
         addContactButton.addActionListener((e) -> {
             String text = newMessageField.getText();
             conversationArea.append(LineSeparator.Unix + "My: " + text);
-            byte[] chars = text.getBytes();
             byte[] empty = new byte[256];
             for (int j = 0; j < empty.length; j ++) {
                 empty[j] = 'x';
             }
+            byte[] chars = SwingUI.naCl.encrypt(text.getBytes(), empty);
             newMessageField.setText("");
             try {
                 int i = 0;

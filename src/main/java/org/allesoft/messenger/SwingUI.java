@@ -1,5 +1,7 @@
 package org.allesoft.messenger;
 
+import com.neilalexander.jnacl.NaCl;
+import com.neilalexander.jnacl.crypto.curve25519xsalsa20poly1305;
 import com.sun.org.apache.xml.internal.serialize.LineSeparator;
 import org.allesoft.jserver.Daemon;
 
@@ -13,8 +15,13 @@ import java.net.Socket;
 public class SwingUI {
     public static Socket connection;
     public static JTextArea currentArea;
+    public static byte[] publicKey = new byte[32];
+    public static byte[] privateKey = new byte[32];
+    public static byte[] peerPublicKey = new byte[32];
+    public static NaCl naCl;
 
     public static void main(String[] args) {
+        curve25519xsalsa20poly1305.crypto_box_keypair(publicKey, privateKey);
         try {
             connection = new Socket("127.0.0.1", 50505);
             new Thread(() -> {

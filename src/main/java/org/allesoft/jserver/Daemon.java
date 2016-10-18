@@ -29,20 +29,17 @@ public class Daemon {
     public void workWith(Socket socket) throws IOException {
         OutputStream outputStream = socket.getOutputStream();
         InputStream inputStream = socket.getInputStream();
-        Runnable logic = new Runnable() {
-            @Override
-            public void run() {
-                while (true) {
-                    byte[] packet = loopPacket(inputStream);
-                    try {
-                        for (Socket s : clients) {
-                            if (s != socket) {
-                                s.getOutputStream().write(packet);
-                            }
+        Runnable logic = () -> {
+            while (true) {
+                byte[] packet = loopPacket(inputStream);
+                try {
+                    for (Socket s : clients) {
+                        if (s != socket) {
+                            s.getOutputStream().write(packet);
                         }
-                    } catch (IOException e) {
-                        System.out.println("write error");
                     }
+                } catch (IOException e) {
+                    System.out.println("write error");
                 }
             }
         };
