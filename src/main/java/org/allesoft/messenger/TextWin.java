@@ -13,7 +13,7 @@ import java.io.IOException;
  */
 public class TextWin extends JFrame {
     public TextWin(String userId) {
-        super("Add contact");
+        super("Conversation with " + userId);
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         //setSize(400, 200);
 

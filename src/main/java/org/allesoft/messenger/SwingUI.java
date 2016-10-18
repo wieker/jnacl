@@ -28,9 +28,14 @@ public class SwingUI {
                 try {
                     while (true) {
                         byte[] packet = Daemon.loopPacket(connection.getInputStream());
+                        byte[] empty = new byte[256];
+                        for (int j = 0; j < empty.length; j ++) {
+                            empty[j] = 'x';
+                        }
+                        byte[] decoded = naCl.decrypt(packet, empty);
                         if (currentArea != null) {
                             SwingUtilities.invokeLater(() -> {
-                                currentArea.append(LineSeparator.Unix + new String(packet));
+                                currentArea.append(LineSeparator.Unix + new String(decoded));
                             });
                         }
                     }
