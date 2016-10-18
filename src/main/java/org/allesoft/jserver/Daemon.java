@@ -32,6 +32,10 @@ public class Daemon {
         Runnable logic = () -> {
             while (true) {
                 byte[] packet = loopPacket(inputStream);
+                if (packet == null) {
+                    cleanupClient(socket);
+                    return;
+                }
                 try {
                     for (Socket s : clients) {
                         if (s != socket) {
@@ -39,11 +43,21 @@ public class Daemon {
                         }
                     }
                 } catch (IOException e) {
-                    System.out.println("write error");
+                    cleanupClient(socket);
+                    return;
                 }
             }
         };
         new Thread(logic).start();
+    }
+
+    private void cleanupClient(Socket socket) {
+        System.out.println("write error");
+        clients.remove(socket);
+        try {
+            socket.close();
+        } catch (IOException e1) {
+        }
     }
 
     public static byte[] loopPacket(InputStream inputStream) {

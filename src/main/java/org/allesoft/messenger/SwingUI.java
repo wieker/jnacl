@@ -23,8 +23,12 @@ public class SwingUI {
 
     public static void main(String[] args) {
         curve25519xsalsa20poly1305.crypto_box_keypair(publicKey, privateKey);
+        JFrame mainWindow = new MainWin();
+    }
+
+    public static void connect(String address) {
         try {
-            connection = new Socket("127.0.0.1", 50505);
+            connection = new Socket(address, 50505);
             new Thread(() -> {
                 try {
                     while (true) {
@@ -43,7 +47,6 @@ public class SwingUI {
                     System.out.println("Exception");
                 }
                 }).start();
-            JFrame mainWindow = new MainWin();
         } catch (IOException e) {
             System.out.println("server error");
         }

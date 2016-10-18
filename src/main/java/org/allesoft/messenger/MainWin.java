@@ -21,6 +21,15 @@ public class MainWin extends JFrame {
         JPanel content = new JPanel();
         content.setLayout(new BoxLayout(content, BoxLayout.PAGE_AXIS));
 
+        JTextField ipLabel = new JTextField("127.0.0.1");
+        content.add(ipLabel);
+
+        JButton connectButton = new JButton("Connect");
+        connectButton.addActionListener( (e) -> {
+            SwingUI.connect(ipLabel.getText());
+        });
+        content.add(connectButton);
+
         JTextField publicKeyLabel = new JTextField(NaCl.asHex(SwingUI.publicKey));
         content.add(publicKeyLabel);
 
