@@ -1,15 +1,16 @@
 package org.allesoft.messenger;
 
+import com.sun.org.apache.xml.internal.serialize.LineSeparator;
+
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.*;
 import java.awt.event.WindowEvent;
 
 /**
  * Created by kabramovich on 18.10.2016.
  */
-public class AddWin extends JFrame {
-    public AddWin(RosterTableModel model) {
+public class TextWin extends JFrame {
+    public TextWin(String userId) {
         super("Add contact");
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setSize(400, 200);
@@ -17,14 +18,18 @@ public class AddWin extends JFrame {
         JPanel content = new JPanel();
         content.setLayout(new BoxLayout(content, BoxLayout.PAGE_AXIS));
 
-        JTextField userIdField = new JTextField();
-        userIdField.setText("User ID");
-        content.add(userIdField);
+        JTextArea conversationArea = new JTextArea();
+        conversationArea.setText("Conversation with " + userId);
+        content.add(conversationArea);
+
+        JTextField newMessageField = new JTextField();
+        newMessageField.setText("");
+        content.add(newMessageField);
 
         JButton addContactButton = new JButton("Done");
         addContactButton.addActionListener((e) -> {
-            model.add(new RosterItem(userIdField.getText()));
-            AddWin.this.dispatchEvent(new WindowEvent(AddWin.this, WindowEvent.WINDOW_CLOSING));
+            conversationArea.append(LineSeparator.Unix + "My: " + newMessageField.getText());
+            newMessageField.setText("");
         });
         content.add(addContactButton);
 

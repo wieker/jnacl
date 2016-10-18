@@ -65,4 +65,8 @@ public class RosterTableModel implements TableModel {
                     roster.size(), TableModelEvent.ALL_COLUMNS, TableModelEvent.INSERT));
         }
     }
+
+    public String get(int index) {
+        return roster.get(index).value;
+    }
 }

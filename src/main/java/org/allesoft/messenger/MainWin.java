@@ -3,6 +3,8 @@ package org.allesoft.messenger;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 /**
  * Created by kabramovich on 18.10.2016.
@@ -14,11 +16,22 @@ public class MainWin extends JFrame {
         setSize(300, 500);
 
         JPanel content = new JPanel();
+        content.setLayout(new BoxLayout(content, BoxLayout.PAGE_AXIS));
 
         RosterTableModel rosterTableModel = new RosterTableModel();
         JTable rosterTable = new JTable(rosterTableModel);
         rosterTable.setDefaultRenderer(RosterItem.class,
                 new RosterTableRenderer(rosterTableModel));
+        rosterTable.addMouseListener(new MouseAdapter() {
+            public void mousePressed(MouseEvent e) {
+                if (e.getClickCount() == 2) {
+                    JTable target = (JTable)e.getSource();
+                    int row = target.getSelectedRow();
+                    int column = target.getSelectedColumn();
+                    new TextWin(rosterTableModel.get(row));
+                }
+            }
+        });
         content.add(rosterTable);
 
         JButton addContactButton = new JButton("Add Contact");
