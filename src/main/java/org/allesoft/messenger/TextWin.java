@@ -5,6 +5,7 @@ import com.sun.org.apache.xml.internal.serialize.LineSeparator;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowEvent;
+import java.io.IOException;
 
 /**
  * Created by kabramovich on 18.10.2016.
@@ -21,6 +22,7 @@ public class TextWin extends JFrame {
         JTextArea conversationArea = new JTextArea();
         conversationArea.setText("Conversation with " + userId);
         content.add(conversationArea);
+        SwingUI.currentArea = conversationArea;
 
         JTextField newMessageField = new JTextField();
         newMessageField.setText("");
@@ -28,8 +30,24 @@ public class TextWin extends JFrame {
 
         JButton addContactButton = new JButton("Done");
         addContactButton.addActionListener((e) -> {
-            conversationArea.append(LineSeparator.Unix + "My: " + newMessageField.getText());
+            String text = newMessageField.getText();
+            conversationArea.append(LineSeparator.Unix + "My: " + text);
+            byte[] chars = text.getBytes();
+            byte[] empty = new byte[256];
+            for (int j = 0; j < empty.length; j ++) {
+                empty[j] = 'x';
+            }
             newMessageField.setText("");
+            try {
+                int i = 0;
+                for (; i <= chars.length - empty.length; i += empty.length) {
+                    SwingUI.connection.getOutputStream().write(chars, i, empty.length);
+                }
+                SwingUI.connection.getOutputStream().write(chars, i, chars.length - i);
+                SwingUI.connection.getOutputStream().write(empty, 0, empty.length - chars.length + i);
+            } catch (IOException x) {
+                System.out.println("send error");
+            }
         });
         content.add(addContactButton);
 
