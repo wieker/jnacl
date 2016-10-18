@@ -25,6 +25,7 @@ public class AddWin extends JFrame {
         JButton addContactButton = new JButton("Done");
         addContactButton.addActionListener((e) -> {
             model.add(new RosterItem(userIdField.getText()));
+            InternalState.writeRoster(model.getRoster());
             AddWin.this.dispatchEvent(new WindowEvent(AddWin.this, WindowEvent.WINDOW_CLOSING));
         });
         content.add(addContactButton);

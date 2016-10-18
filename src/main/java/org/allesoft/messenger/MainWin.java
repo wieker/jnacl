@@ -3,9 +3,6 @@ package org.allesoft.messenger;
 import com.neilalexander.jnacl.NaCl;
 
 import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -26,11 +23,11 @@ public class MainWin extends JFrame {
 
         JButton connectButton = new JButton("Connect");
         connectButton.addActionListener( (e) -> {
-            SwingUI.connect(ipLabel.getText());
+            InternalState.connect(ipLabel.getText());
         });
         content.add(connectButton);
 
-        JTextField publicKeyLabel = new JTextField(NaCl.asHex(SwingUI.publicKey));
+        JTextField publicKeyLabel = new JTextField(NaCl.asHex(InternalState.publicKey));
         content.add(publicKeyLabel);
 
         RosterTableModel rosterTableModel = new RosterTableModel();
@@ -57,8 +54,9 @@ public class MainWin extends JFrame {
 
         add(content);
 
-        rosterTableModel.add(new RosterItem("Item1"));
-        rosterTableModel.add(new RosterItem("Item2"));
+        for (RosterItem item : InternalState.loadRoster()) {
+            rosterTableModel.add(item);
+        }
 
         pack();
         setVisible(true);

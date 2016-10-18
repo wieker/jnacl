@@ -69,4 +69,8 @@ public class RosterTableModel implements TableModel {
     public String get(int index) {
         return roster.get(index).value;
     }
+
+    public List<RosterItem> getRoster() {
+        return roster;
+    }
 }
