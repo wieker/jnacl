@@ -1,7 +1,6 @@
 package org.allesoft.messenger;
 
 import org.allesoft.messenger.client.ClientState;
-import org.allesoft.messenger.client.InternalState;
 
 import javax.swing.*;
 
