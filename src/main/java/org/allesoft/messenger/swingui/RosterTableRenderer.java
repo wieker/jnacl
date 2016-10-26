@@ -1,6 +1,6 @@
-package org.allesoft.messenger;
+package org.allesoft.messenger.swingui;
 
-import org.allesoft.messenger.client.RosterItem;
+import org.allesoft.messenger.jclient.RosterItem;
 
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;

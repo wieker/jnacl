@@ -1,4 +1,4 @@
-package org.allesoft.messenger.client;
+package org.allesoft.messenger.jclient;
 
 /**
  * Created by kabramovich on 18.10.2016.

@@ -1,11 +1,10 @@
-package org.allesoft.jserver;
+package org.allesoft.messenger.jserver;
 
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * Created by kabramovich on 18.10.2016.

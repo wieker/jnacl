@@ -1,9 +1,9 @@
-package org.allesoft.messenger.client;
+package org.allesoft.messenger.jclient;
 
 import com.neilalexander.jnacl.NaCl;
 import com.neilalexander.jnacl.crypto.curve25519xsalsa20poly1305;
 import com.sun.org.apache.xml.internal.serialize.LineSeparator;
-import org.allesoft.jserver.Daemon;
+import org.allesoft.messenger.jserver.Daemon;
 
 import java.io.*;
 import java.net.Socket;

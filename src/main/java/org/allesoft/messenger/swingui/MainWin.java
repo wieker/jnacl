@@ -1,8 +1,8 @@
-package org.allesoft.messenger;
+package org.allesoft.messenger.swingui;
 
 import com.neilalexander.jnacl.NaCl;
-import org.allesoft.messenger.client.Client;
-import org.allesoft.messenger.client.RosterItem;
+import org.allesoft.messenger.jclient.Client;
+import org.allesoft.messenger.jclient.RosterItem;
 
 import javax.swing.*;
 import java.awt.event.MouseAdapter;

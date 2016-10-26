@@ -1,4 +1,4 @@
-package org.allesoft.messenger.client;
+package org.allesoft.messenger.jclient;
 
 import java.util.ArrayList;
 import java.util.List;

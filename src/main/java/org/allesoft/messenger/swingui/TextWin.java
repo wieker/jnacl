@@ -1,8 +1,8 @@
-package org.allesoft.messenger;
+package org.allesoft.messenger.swingui;
 
 import com.sun.org.apache.xml.internal.serialize.LineSeparator;
-import org.allesoft.messenger.client.Client;
-import org.allesoft.messenger.client.MessageSender;
+import org.allesoft.messenger.jclient.Client;
+import org.allesoft.messenger.jclient.MessageSender;
 
 import javax.swing.*;
 

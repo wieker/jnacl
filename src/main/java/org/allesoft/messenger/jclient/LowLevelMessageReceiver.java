@@ -1,8 +1,4 @@
-package org.allesoft.messenger.client;
-
-import com.neilalexander.jnacl.NaCl;
-
-import javax.swing.*;
+package org.allesoft.messenger.jclient;
 
 /**
  * Created by kabramovich on 18.10.2016.

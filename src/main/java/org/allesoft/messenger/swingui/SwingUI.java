@@ -1,6 +1,6 @@
-package org.allesoft.messenger;
+package org.allesoft.messenger.swingui;
 
-import org.allesoft.messenger.client.ClientImpl;
+import org.allesoft.messenger.jclient.ClientImpl;
 
 import javax.swing.*;
 

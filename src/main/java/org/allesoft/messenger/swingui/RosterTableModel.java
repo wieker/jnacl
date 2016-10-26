@@ -1,7 +1,7 @@
-package org.allesoft.messenger;
+package org.allesoft.messenger.swingui;
 
-import org.allesoft.messenger.client.RosterImpl;
-import org.allesoft.messenger.client.RosterItem;
+import org.allesoft.messenger.jclient.RosterImpl;
+import org.allesoft.messenger.jclient.RosterItem;
 
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
