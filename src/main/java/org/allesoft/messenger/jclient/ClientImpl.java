@@ -127,7 +127,7 @@ public class ClientImpl extends Client {
     public MessageSender addConversation(String userId, MessageReceiver receiver) {
         NaCl naCl = createNaCl(userId);
         conversations.add(packet -> {
-            int length = packet[NaCl.crypto_secretbox_NONCEBYTES];
+            int length = packet[NaCl.crypto_secretbox_NONCEBYTES] & 0xFF;
             byte[] chars = new byte[length];
             System.arraycopy(packet, NaCl.crypto_secretbox_NONCEBYTES + 1, chars, 0, length);
             byte[] decoded = naCl.decrypt(chars, packet);

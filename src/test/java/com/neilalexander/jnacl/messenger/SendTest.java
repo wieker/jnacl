@@ -27,5 +27,8 @@ public class SendTest {
 
         sender1.send("Message from the first client to the second");
         sender2.send("Message from the second client to the first");
+
+        sender1.send("Message from the first client to the second#######################################################################################################################");
+        sender2.send("Message from the second client to the first#######################################################################################################################");
     }
 }
