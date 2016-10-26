@@ -14,7 +14,7 @@ public class SwingUI {
         if (args.length == 0) {
             System.out.println("Not enough parameters");
         } else {
-            JFrame mainWindow = new MainWin(new ClientState(args[0]).initKeys());
+            JFrame mainWindow = new MainWin(new ClientState(args[0]).initKeys().loadRoster());
         }
     }
 

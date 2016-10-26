@@ -13,8 +13,18 @@ import java.util.List;
  * Created by kabramovich on 18.10.2016.
  */
 public class RosterTableModel implements TableModel {
-    Roster roster = new Roster();
+    Roster roster;
     List<TableModelListener> changeListeners = new ArrayList<>();
+
+    public RosterTableModel(Roster roster) {
+        this.roster = roster;
+        roster.addListener(() -> {
+            for (TableModelListener l : changeListeners) {
+                l.tableChanged(new TableModelEvent(this, roster.size(),
+                        roster.size(), TableModelEvent.ALL_COLUMNS, TableModelEvent.INSERT));
+            }
+        });
+    }
 
     @Override
     public int getRowCount() {

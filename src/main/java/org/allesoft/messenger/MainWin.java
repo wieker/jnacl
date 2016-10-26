@@ -32,7 +32,7 @@ public class MainWin extends JFrame {
         JTextField publicKeyLabel = new JTextField(NaCl.asHex(clientState.publicKey));
         content.add(publicKeyLabel);
 
-        RosterTableModel rosterTableModel = new RosterTableModel();
+        RosterTableModel rosterTableModel = new RosterTableModel(clientState.getRoster());
         JTable rosterTable = new JTable(rosterTableModel);
         rosterTable.setDefaultRenderer(RosterItem.class,
                 new RosterTableRenderer(rosterTableModel));
@@ -56,9 +56,7 @@ public class MainWin extends JFrame {
 
         add(content);
 
-        for (RosterItem item : clientState.loadRoster()) {
-            rosterTableModel.add(item);
-        }
+        clientState.loadRoster();
 
         pack();
         setVisible(true);

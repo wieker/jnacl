@@ -19,6 +19,7 @@ public class ClientState {
     public byte[] privateKey = new byte[32];
     public List<MessageListener> conversations = new ArrayList<>();
     public String baseDirPath;
+    public Roster roster;
 
     public ClientState(String baseDirPath) {
         this.baseDirPath = baseDirPath;
@@ -59,24 +60,24 @@ public class ClientState {
         return this;
     }
 
-    public List<RosterItem> loadRoster() {
-        List<RosterItem> result = new ArrayList<>();
+    public ClientState loadRoster() {
+        this.roster = new Roster();
         File roster = new File(baseDirPath, "roster");
         if (!roster.exists()) {
-            return result;
+            return this;
         }
         try {
             BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(roster)));
             String line;
             while ((line = reader.readLine()) != null) {
-                result.add(new RosterItem(line));
+                this.roster.add(new RosterItem(line));
             }
             reader.close();
         } catch (IOException e) {
             System.out.println("Error reading from Disk");
             throw new RuntimeException();
         }
-        return result;
+        return this;
     }
 
     public void writeRoster(Roster roster) {
@@ -112,5 +113,13 @@ public class ClientState {
         } catch (IOException e) {
             System.out.println("server error");
         }
+    }
+
+    public Roster getRoster() {
+        return roster;
+    }
+
+    public void setRoster(Roster roster) {
+        this.roster = roster;
     }
 }
