@@ -14,22 +14,22 @@ import java.util.List;
 /**
  * Created by kabramovich on 19.10.2016.
  */
-public class ClientState {
-    public Socket connection;
-    public byte[] publicKey = new byte[32];
-    public byte[] privateKey = new byte[32];
-    public List<LowLevelMessageReceiver> conversations = new ArrayList<>();
-    public String baseDirPath;
-    public Roster roster;
+public class ClientImpl extends Client {
+    private Socket connection;
+    private byte[] publicKey = new byte[32];
+    private byte[] privateKey = new byte[32];
+    private List<LowLevelMessageReceiver> conversations = new ArrayList<>();
+    private String baseDirPath;
+    private RosterImpl roster;
 
-    public ClientState(String baseDirPath) {
+    public ClientImpl(String baseDirPath) {
         this.baseDirPath = baseDirPath;
         if (!new File(baseDirPath).exists()) {
             new File(baseDirPath).mkdir();
         }
     }
 
-    public ClientState initKeys() {
+    public ClientImpl initKeys() {
         File privateKeyFile = new File(baseDirPath, "private_key");
         File publicKeyFile = new File(baseDirPath, "public_key");
         if (privateKeyFile.exists() && publicKeyFile.exists()) {
@@ -61,8 +61,8 @@ public class ClientState {
         return this;
     }
 
-    public ClientState loadRoster() {
-        this.roster = new Roster();
+    public ClientImpl loadRoster() {
+        this.roster = new RosterImpl();
         File roster = new File(baseDirPath, "roster");
         if (!roster.exists()) {
             return this;
@@ -81,13 +81,14 @@ public class ClientState {
         return this;
     }
 
-    public void writeRoster(Roster roster) {
+    @Override
+    public void writeRoster(RosterImpl roster) {
         List<String> result = new ArrayList<>();
         File rosterFile = new File(baseDirPath, "roster");
         try {
             FileWriter writer = new FileWriter(rosterFile);
             for (RosterItem item : roster.getRoster()) {
-                writer.write(item.value + LineSeparator.Unix);
+                writer.write(item.getValue() + LineSeparator.Unix);
             }
             writer.close();
         } catch (IOException e) {
@@ -96,9 +97,10 @@ public class ClientState {
         }
     }
 
-    public void connect(String address) {
+    @Override
+    public void connect(String address, Integer port) {
         try {
-            connection = new Socket(address, 50505);
+            connection = new Socket(address, port);
             new Thread(() -> {
                 try {
                     while (true) {
@@ -116,29 +118,28 @@ public class ClientState {
         }
     }
 
-    public Roster getRoster() {
+    @Override
+    public RosterImpl getRoster() {
         return roster;
     }
 
+    @Override
     public MessageSender addConversation(String userId, MessageReceiver receiver) {
         NaCl naCl = createNaCl(userId);
-        conversations.add(new LowLevelMessageReceiver() {
-            @Override
-            public void receive(byte[] packet) {
-                int length = packet[NaCl.crypto_secretbox_NONCEBYTES];
-                byte[] chars = new byte[length];
-                System.arraycopy(packet, NaCl.crypto_secretbox_NONCEBYTES + 1, chars, 0, length);
-                byte[] decoded = naCl.decrypt(chars, packet);
-                byte[] dstKey = new byte[NaCl.crypto_secretbox_KEYBYTES];
-                System.arraycopy(decoded, 0, dstKey, 0, NaCl.crypto_secretbox_KEYBYTES);
-                for (int i = 0; i < dstKey.length; i ++) {
-                    if (publicKey[i] != dstKey[i]) {
-                        return;
-                    }
+        conversations.add(packet -> {
+            int length = packet[NaCl.crypto_secretbox_NONCEBYTES];
+            byte[] chars = new byte[length];
+            System.arraycopy(packet, NaCl.crypto_secretbox_NONCEBYTES + 1, chars, 0, length);
+            byte[] decoded = naCl.decrypt(chars, packet);
+            byte[] dstKey = new byte[NaCl.crypto_secretbox_KEYBYTES];
+            System.arraycopy(decoded, 0, dstKey, 0, NaCl.crypto_secretbox_KEYBYTES);
+            for (int i = 0; i < dstKey.length; i ++) {
+                if (publicKey[i] != dstKey[i]) {
+                    return;
                 }
-                receiver.receive(LineSeparator.Unix + new String(decoded,
-                        NaCl.crypto_secretbox_KEYBYTES, decoded.length - NaCl.crypto_secretbox_KEYBYTES));
             }
+            receiver.receive(LineSeparator.Unix + new String(decoded,
+                    NaCl.crypto_secretbox_KEYBYTES, decoded.length - NaCl.crypto_secretbox_KEYBYTES));
         });
         return text -> {
             byte[] nonce = new byte[NaCl.crypto_secretbox_NONCEBYTES];
@@ -171,5 +172,10 @@ public class ClientState {
             System.out.println("NaCL exception");
         }
         return naCl;
+    }
+
+    @Override
+    public byte[] getPublicKey() {
+        return publicKey;
     }
 }

@@ -1,6 +1,6 @@
 package org.allesoft.messenger;
 
-import org.allesoft.messenger.client.ClientState;
+import org.allesoft.messenger.client.ClientImpl;
 
 import javax.swing.*;
 
@@ -13,7 +13,7 @@ public class SwingUI {
         if (args.length == 0) {
             System.out.println("Not enough parameters");
         } else {
-            JFrame mainWindow = new MainWin(new ClientState(args[0]).initKeys().loadRoster());
+            JFrame mainWindow = new MainWin(new ClientImpl(args[0]).initKeys().loadRoster());
         }
     }
 

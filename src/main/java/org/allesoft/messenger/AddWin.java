@@ -1,6 +1,6 @@
 package org.allesoft.messenger;
 
-import org.allesoft.messenger.client.ClientState;
+import org.allesoft.messenger.client.Client;
 import org.allesoft.messenger.client.RosterItem;
 
 import javax.swing.*;
@@ -10,7 +10,7 @@ import java.awt.event.WindowEvent;
  * Created by kabramovich on 18.10.2016.
  */
 public class AddWin extends JFrame {
-    public AddWin(RosterTableModel model, ClientState clientState) {
+    public AddWin(RosterTableModel model, Client client) {
         super("Add contact");
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         //setSize(400, 200);
@@ -25,7 +25,7 @@ public class AddWin extends JFrame {
         JButton addContactButton = new JButton("Done");
         addContactButton.addActionListener((e) -> {
             model.add(new RosterItem(userIdField.getText()));
-            clientState.writeRoster(model.getRoster());
+            client.writeRoster(model.getRoster());
             AddWin.this.dispatchEvent(new WindowEvent(AddWin.this, WindowEvent.WINDOW_CLOSING));
         });
         content.add(addContactButton);

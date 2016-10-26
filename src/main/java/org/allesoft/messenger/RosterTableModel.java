@@ -1,6 +1,6 @@
 package org.allesoft.messenger;
 
-import org.allesoft.messenger.client.Roster;
+import org.allesoft.messenger.client.RosterImpl;
 import org.allesoft.messenger.client.RosterItem;
 
 import javax.swing.event.TableModelEvent;
@@ -13,10 +13,10 @@ import java.util.List;
  * Created by kabramovich on 18.10.2016.
  */
 public class RosterTableModel implements TableModel {
-    Roster roster;
+    RosterImpl roster;
     List<TableModelListener> changeListeners = new ArrayList<>();
 
-    public RosterTableModel(Roster roster) {
+    public RosterTableModel(RosterImpl roster) {
         this.roster = roster;
         roster.addListener(() -> {
             for (TableModelListener l : changeListeners) {
@@ -80,10 +80,10 @@ public class RosterTableModel implements TableModel {
     }
 
     public String get(int index) {
-        return roster.getByIndex(index).value;
+        return roster.getByIndex(index).getValue();
     }
 
-    public Roster getRoster() {
+    public RosterImpl getRoster() {
         return roster;
     }
 }

@@ -13,9 +13,9 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class Daemon {
     List<Socket> clients = new ArrayList<>();
 
-    public void openSocket() {
+    public void openSocket(Integer port) {
         try {
-            ServerSocket serverSocket = new ServerSocket(50505);
+            ServerSocket serverSocket = new ServerSocket(port);
             while (true) {
                 Socket clientSocket = serverSocket.accept();
                 clients.add(clientSocket);
@@ -81,6 +81,6 @@ public class Daemon {
     }
 
     public static void main(String[] args) {
-        new Daemon().openSocket();
+        new Daemon().openSocket(50505);
     }
 }

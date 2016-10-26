@@ -17,8 +17,7 @@ public class RosterTableRenderer extends JLabel implements TableCellRenderer {
         RosterItem item = (RosterItem)value;
         setForeground(Color.BLACK);
         setBackground(Color.RED);
-        this.setText(item.value);
-        System.out.println("Rendered " + item.value);
+        this.setText(item.getValue());
         return this;
     }
 
