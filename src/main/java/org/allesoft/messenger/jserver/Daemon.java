@@ -13,16 +13,17 @@ public class Daemon {
     List<Socket> clients = new ArrayList<>();
 
     public void openSocket(Integer port) {
-        try {
-            ServerSocket serverSocket = new ServerSocket(port);
-            while (true) {
-                Socket clientSocket = serverSocket.accept();
-                clients.add(clientSocket);
-                workWith(clientSocket);
-            }
-        } catch (IOException x) {
-            System.out.println("IOException in core");
-        }
+        new Thread(() -> {
+            try {
+                ServerSocket serverSocket = new ServerSocket(port);
+                while (true) {
+                    Socket clientSocket = serverSocket.accept();
+                    clients.add(clientSocket);
+                    workWith(clientSocket);
+                }
+            } catch (IOException x) {
+                System.out.println("IOException in core");
+            }}).start();
     }
 
     public void workWith(Socket socket) throws IOException {
