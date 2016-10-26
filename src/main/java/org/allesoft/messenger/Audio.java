@@ -1,4 +1,4 @@
-package com.neilalexander.jnacl.crypto.bin;
+package org.allesoft.messenger;
 
 /*
  *

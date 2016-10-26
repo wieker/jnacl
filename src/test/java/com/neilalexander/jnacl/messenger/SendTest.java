@@ -1,6 +1,8 @@
 package com.neilalexander.jnacl.messenger;
 
-import com.neilalexander.jnacl.NaCl;
+import org.allesoft.messenger.NaCl;
+import org.abstractj.kalium.crypto.Box;
+import org.abstractj.kalium.encoders.Encoder;
 import org.allesoft.messenger.jclient.Client;
 import org.allesoft.messenger.jclient.ClientImpl;
 import org.allesoft.messenger.jclient.MessageSender;
@@ -24,6 +26,8 @@ public class SendTest {
 
         MessageSender sender1 = client1.addConversation(NaCl.asHex(client2.getPublicKey()), text -> System.out.println(text));
         MessageSender sender2 = client2.addConversation(NaCl.asHex(client1.getPublicKey()), text -> System.out.println(text));
+
+        new Box(NaCl.asHex(client1.getPublicKey()), NaCl.asHex(client2.getPublicKey()), Encoder.HEX);
 
         sender1.send("Message from the first client to the second");
         sender2.send("Message from the second client to the first");

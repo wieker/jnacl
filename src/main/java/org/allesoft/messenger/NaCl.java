@@ -25,27 +25,32 @@
 //  POSSIBILITY OF SUCH DAMAGE.
 //
 
-package com.neilalexander.jnacl;
+package org.allesoft.messenger;
 
-import org.testng.annotations.Test;
+import java.util.Formatter;
 
-import static org.fest.assertions.Assertions.assertThat;
+public class NaCl {
+  public static final int crypto_secretbox_KEYBYTES = 32;
+  public static final int crypto_secretbox_NONCEBYTES = 24;
+  public static final int crypto_secretbox_ZEROBYTES = 32;
+  public static final int crypto_secretbox_BOXZEROBYTES = 16;
+  public static final int crypto_secretbox_BEFORENMBYTES = 32;
 
-public class NaClTest {
-  private static String publickey = "0cba66066896ffb51e92bc3c36ffa627c2493770d9b0b4368a2466c801b0184e";
-  private static String privatekey = "176970653848be5242059e2308dfa30245b93a13befd2ebd09f09b971273b728";
-  private static byte[] nonce = new byte[24];
+  public static byte[] getBinary(String s) {
+    int len = s.length();
+    byte[] data = new byte[len / 2];
 
-  @Test
-  public void happy_path() throws Exception {
-    NaCl test = new NaCl(privatekey, publickey);
-    byte[] in = "hi".getBytes();
+    for (int i = 0; i < len; i += 2)
+      data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4) + Character.digit(s.charAt(i + 1), 16));
 
-    byte[] foo = test.encrypt(in, nonce);
-    byte[] bar = test.decrypt(foo, nonce);
-
-    assertThat(NaCl.asHex(in)).isEqualTo("6869");
-    assertThat(NaCl.asHex(foo)).isEqualTo("00000000000000000000000000000000c0267362f8612dba2bd704aae3f6da44eaed");
-    assertThat(NaCl.asHex(bar)).isEqualTo("6869"); //commit chk
+    return data;
   }
+
+  public static String asHex(byte[] buf) {
+    Formatter formatter = new Formatter();
+    for (byte b : buf)
+      formatter.format("%02x", b);
+    return formatter.toString();
+  }
+
 }

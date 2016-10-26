@@ -1,8 +1,9 @@
 package org.allesoft.messenger.jclient;
 
-import com.neilalexander.jnacl.NaCl;
-import com.neilalexander.jnacl.crypto.curve25519xsalsa20poly1305;
+import org.allesoft.messenger.NaCl;
 import com.sun.org.apache.xml.internal.serialize.LineSeparator;
+import org.abstractj.kalium.crypto.Box;
+import org.abstractj.kalium.keys.KeyPair;
 import org.allesoft.messenger.jserver.Daemon;
 
 import java.io.*;
@@ -45,7 +46,9 @@ public class ClientImpl extends Client {
                 throw new RuntimeException();
             }
         } else {
-            curve25519xsalsa20poly1305.crypto_box_keypair(publicKey, privateKey);
+            KeyPair pair = new KeyPair();
+            publicKey = pair.getPublicKey().toBytes();
+            privateKey = pair.getPrivateKey().toBytes();
             try {
                 OutputStream outputStream1 = new FileOutputStream(privateKeyFile);
                 OutputStream outputStream2 = new FileOutputStream(publicKeyFile);
@@ -125,7 +128,7 @@ public class ClientImpl extends Client {
 
     @Override
     public MessageSender addConversation(String userId, MessageReceiver receiver) {
-        NaCl naCl = createNaCl(userId);
+        Box naCl = createNaCl(userId);
         conversations.add(packet -> {
             int length = packet[NaCl.crypto_secretbox_NONCEBYTES] & 0xFF;
             byte[] chars = new byte[length];
@@ -152,7 +155,7 @@ public class ClientImpl extends Client {
             byte[] finalPlain = new byte[plain.length + binaryId.length];
             System.arraycopy(binaryId, 0, finalPlain, 0, NaCl.crypto_secretbox_KEYBYTES);
             System.arraycopy(plain, 0, finalPlain, NaCl.crypto_secretbox_KEYBYTES, plain.length);
-            byte[] chars = naCl.encrypt(finalPlain, nonce);
+            byte[] chars = naCl.encrypt(nonce, finalPlain);
             System.arraycopy(nonce, 0, out, 0, NaCl.crypto_secretbox_NONCEBYTES);
             out[NaCl.crypto_secretbox_NONCEBYTES] = (byte) chars.length;
             System.arraycopy(chars, 0, out, NaCl.crypto_secretbox_NONCEBYTES + 1, chars.length);
@@ -164,10 +167,10 @@ public class ClientImpl extends Client {
         };
     }
 
-    private NaCl createNaCl(String userId) {
-        NaCl naCl = null;
+    private Box createNaCl(String userId) {
+        Box naCl = null;
         try {
-            naCl = new NaCl(privateKey, NaCl.getBinary(userId));
+            naCl = new Box(NaCl.getBinary(userId), privateKey);
         } catch (Exception x) {
             System.out.println("NaCL exception");
         }
