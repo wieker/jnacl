@@ -1,9 +1,9 @@
 package org.allesoft.messenger;
 
-import com.neilalexander.jnacl.crypto.curve25519xsalsa20poly1305;
+import org.allesoft.messenger.client.ClientState;
+import org.allesoft.messenger.client.InternalState;
 
 import javax.swing.*;
-import java.io.File;
 
 /**
  * Created by kabramovich on 18.10.2016.
@@ -11,8 +11,11 @@ import java.io.File;
 public class SwingUI {
 
     public static void main(String[] args) {
-        InternalState.init();
-        JFrame mainWindow = new MainWin();
+        if (args.length == 0) {
+            System.out.println("Not enough parameters");
+        } else {
+            JFrame mainWindow = new MainWin(new ClientState(args[0]).initKeys());
+        }
     }
 
 }

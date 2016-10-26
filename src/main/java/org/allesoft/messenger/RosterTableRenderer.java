@@ -1,5 +1,7 @@
 package org.allesoft.messenger;
 
+import org.allesoft.messenger.client.RosterItem;
+
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;

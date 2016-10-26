@@ -1,8 +1,9 @@
-package org.allesoft.messenger;
+package org.allesoft.messenger.client;
 
 import com.neilalexander.jnacl.crypto.curve25519xsalsa20poly1305;
 import com.sun.org.apache.xml.internal.serialize.LineSeparator;
 import org.allesoft.jserver.Daemon;
+import org.allesoft.messenger.MessageListener;
 
 import java.io.*;
 import java.net.Socket;
@@ -10,17 +11,25 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by kabramovich on 18.10.2016.
+ * Created by kabramovich on 19.10.2016.
  */
-public class InternalState {
-    public static Socket connection;
-    public static byte[] publicKey = new byte[32];
-    public static byte[] privateKey = new byte[32];
-    public static List<MessageListener> conversations = new ArrayList<>();
+public class ClientState {
+    public Socket connection;
+    public byte[] publicKey = new byte[32];
+    public byte[] privateKey = new byte[32];
+    public List<MessageListener> conversations = new ArrayList<>();
+    public String baseDirPath;
 
-    public static void init() {
-        File privateKeyFile = new File("private_key");
-        File publicKeyFile = new File("public_key");
+    public ClientState(String baseDirPath) {
+        this.baseDirPath = baseDirPath;
+        if (!new File(baseDirPath).exists()) {
+            new File(baseDirPath).mkdir();
+        }
+    }
+
+    public ClientState initKeys() {
+        File privateKeyFile = new File(baseDirPath, "private_key");
+        File publicKeyFile = new File(baseDirPath, "public_key");
         if (privateKeyFile.exists() && publicKeyFile.exists()) {
             try {
                 InputStream inputStream1 = new FileInputStream(privateKeyFile);
@@ -34,7 +43,7 @@ public class InternalState {
                 throw new RuntimeException();
             }
         } else {
-            curve25519xsalsa20poly1305.crypto_box_keypair(InternalState.publicKey, InternalState.privateKey);
+            curve25519xsalsa20poly1305.crypto_box_keypair(publicKey, privateKey);
             try {
                 OutputStream outputStream1 = new FileOutputStream(privateKeyFile);
                 OutputStream outputStream2 = new FileOutputStream(publicKeyFile);
@@ -47,11 +56,12 @@ public class InternalState {
                 throw new RuntimeException();
             }
         }
+        return this;
     }
 
-    public static List<RosterItem> loadRoster() {
+    public List<RosterItem> loadRoster() {
         List<RosterItem> result = new ArrayList<>();
-        File roster = new File("roster");
+        File roster = new File(baseDirPath, "roster");
         if (!roster.exists()) {
             return result;
         }
@@ -69,12 +79,12 @@ public class InternalState {
         return result;
     }
 
-    public static void writeRoster(List<RosterItem> roster) {
+    public void writeRoster(Roster roster) {
         List<String> result = new ArrayList<>();
-        File rosterFile = new File("roster");
+        File rosterFile = new File(baseDirPath, "roster");
         try {
             FileWriter writer = new FileWriter(rosterFile);
-            for (RosterItem item : roster) {
+            for (RosterItem item : roster.getRoster()) {
                 writer.write(item.value + LineSeparator.Unix);
             }
             writer.close();
@@ -84,7 +94,7 @@ public class InternalState {
         }
     }
 
-    public static void connect(String address) {
+    public void connect(String address) {
         try {
             connection = new Socket(address, 50505);
             new Thread(() -> {
@@ -98,10 +108,9 @@ public class InternalState {
                 } catch (IOException e) {
                     System.out.println("Exception");
                 }
-                }).start();
+            }).start();
         } catch (IOException e) {
             System.out.println("server error");
         }
     }
-
 }
