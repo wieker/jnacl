@@ -1,6 +1,5 @@
-package com.neilalexander.jnacl.messenger;
+package org.allesoft.messenger;
 
-import org.allesoft.messenger.NaCl;
 import org.abstractj.kalium.crypto.Box;
 import org.abstractj.kalium.encoders.Encoder;
 import org.allesoft.messenger.jclient.Client;

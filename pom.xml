@@ -19,12 +19,6 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.easytesting</groupId>
-      <artifactId>fest-assert</artifactId>
-      <version>1.4</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>org.abstractj.kalium</groupId>
       <artifactId>kalium</artifactId>
       <version>0.4.0</version>
