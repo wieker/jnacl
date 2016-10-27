@@ -132,8 +132,10 @@ public class ClientImpl extends Client {
         conversations.add(packet -> {
             int length = packet[NaCl.crypto_secretbox_NONCEBYTES] & 0xFF;
             byte[] chars = new byte[length];
+            byte[] nonce = new byte[NaCl.crypto_secretbox_NONCEBYTES];
             System.arraycopy(packet, NaCl.crypto_secretbox_NONCEBYTES + 1, chars, 0, length);
-            byte[] decoded = naCl.decrypt(chars, packet);
+            System.arraycopy(packet, 0, nonce, 0, NaCl.crypto_secretbox_NONCEBYTES);
+            byte[] decoded = naCl.decrypt(nonce, chars);
             byte[] dstKey = new byte[NaCl.crypto_secretbox_KEYBYTES];
             System.arraycopy(decoded, 0, dstKey, 0, NaCl.crypto_secretbox_KEYBYTES);
             for (int i = 0; i < dstKey.length; i ++) {
