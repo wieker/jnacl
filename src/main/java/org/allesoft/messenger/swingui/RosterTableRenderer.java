@@ -1,6 +1,7 @@
 package org.allesoft.messenger.swingui;
 
 import org.allesoft.messenger.jclient.RosterItem;
+import org.allesoft.messenger.jclient.RosterItemImpl;
 
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
@@ -26,7 +27,7 @@ public class RosterTableRenderer extends JLabel implements TableCellRenderer {
         addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                model.add(new RosterItem("New item"));
+                model.add(new RosterItemImpl("New item"));
             }
 
             @Override

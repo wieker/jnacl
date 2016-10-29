@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * Created by kabramovich on 19.10.2016.
  */
-public class RosterImpl extends Roster {
+public class RosterImpl implements Roster {
     private List<RosterItem> roster = new ArrayList<>();
     private List<RosterEventListener> listeners = new ArrayList<>();
 

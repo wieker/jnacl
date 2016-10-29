@@ -1,7 +1,7 @@
 package org.allesoft.messenger.swingui;
 
 import org.allesoft.messenger.jclient.Client;
-import org.allesoft.messenger.jclient.RosterItem;
+import org.allesoft.messenger.jclient.RosterItemImpl;
 
 import javax.swing.*;
 import java.awt.event.WindowEvent;
@@ -24,7 +24,7 @@ public class AddWin extends JFrame {
 
         JButton addContactButton = new JButton("Done");
         addContactButton.addActionListener((e) -> {
-            model.add(new RosterItem(userIdField.getText()));
+            model.add(new RosterItemImpl(userIdField.getText()));
             client.writeRoster(model.getRoster());
             AddWin.this.dispatchEvent(new WindowEvent(AddWin.this, WindowEvent.WINDOW_CLOSING));
         });

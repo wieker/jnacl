@@ -3,12 +3,12 @@ package org.allesoft.messenger.jclient;
 /**
  * Created by kabramovich on 26.10.2016.
  */
-public abstract class Roster {
-    public abstract int size();
+public interface Roster {
+    int size();
 
-    public abstract void add(RosterItem item);
+    void add(RosterItem item);
 
-    public abstract RosterItem getByIndex(int index);
+    RosterItem getByIndex(int index);
 
-    public abstract void addListener(RosterEventListener listener);
+    void addListener(RosterEventListener listener);
 }

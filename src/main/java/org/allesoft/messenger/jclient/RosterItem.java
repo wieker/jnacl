@@ -1,19 +1,8 @@
 package org.allesoft.messenger.jclient;
 
 /**
- * Created by kabramovich on 18.10.2016.
+ * Created by wieker on 29.10.16.
  */
-public class RosterItem {
-    private String value;
-
-    public RosterItem() {
-    }
-
-    public RosterItem(String value) {
-        this.value = value;
-    }
-
-    public String getValue() {
-        return value;
-    }
+public abstract class RosterItem {
+    public abstract String getValue();
 }

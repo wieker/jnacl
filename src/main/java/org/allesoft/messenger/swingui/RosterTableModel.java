@@ -1,7 +1,9 @@
 package org.allesoft.messenger.swingui;
 
+import org.allesoft.messenger.jclient.Roster;
 import org.allesoft.messenger.jclient.RosterImpl;
 import org.allesoft.messenger.jclient.RosterItem;
+import org.allesoft.messenger.jclient.RosterItemImpl;
 
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
@@ -13,10 +15,10 @@ import java.util.List;
  * Created by kabramovich on 18.10.2016.
  */
 public class RosterTableModel implements TableModel {
-    RosterImpl roster;
+    Roster roster;
     List<TableModelListener> changeListeners = new ArrayList<>();
 
-    public RosterTableModel(RosterImpl roster) {
+    public RosterTableModel(Roster roster) {
         this.roster = roster;
         roster.addListener(() -> {
             for (TableModelListener l : changeListeners) {
@@ -43,7 +45,7 @@ public class RosterTableModel implements TableModel {
 
     @Override
     public Class<?> getColumnClass(int columnIndex) {
-        return RosterItem.class;
+        return RosterItemImpl.class;
     }
 
     @Override
@@ -83,7 +85,7 @@ public class RosterTableModel implements TableModel {
         return roster.getByIndex(index).getValue();
     }
 
-    public RosterImpl getRoster() {
+    public Roster getRoster() {
         return roster;
     }
 }

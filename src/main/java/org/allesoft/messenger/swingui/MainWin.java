@@ -2,7 +2,7 @@ package org.allesoft.messenger.swingui;
 
 import org.allesoft.messenger.NaCl;
 import org.allesoft.messenger.jclient.Client;
-import org.allesoft.messenger.jclient.RosterItem;
+import org.allesoft.messenger.jclient.RosterItemImpl;
 
 import javax.swing.*;
 import java.awt.event.MouseAdapter;
@@ -34,7 +34,7 @@ public class MainWin extends JFrame {
 
         RosterTableModel rosterTableModel = new RosterTableModel(client.getRoster());
         JTable rosterTable = new JTable(rosterTableModel);
-        rosterTable.setDefaultRenderer(RosterItem.class,
+        rosterTable.setDefaultRenderer(RosterItemImpl.class,
                 new RosterTableRenderer(rosterTableModel));
         rosterTable.addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent e) {

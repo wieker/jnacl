@@ -74,7 +74,7 @@ public class ClientImpl extends Client {
             BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(roster)));
             String line;
             while ((line = reader.readLine()) != null) {
-                this.roster.add(new RosterItem(line));
+                this.roster.add(new RosterItemImpl(line));
             }
             reader.close();
         } catch (IOException e) {
@@ -85,12 +85,13 @@ public class ClientImpl extends Client {
     }
 
     @Override
-    public void writeRoster(RosterImpl roster) {
+    public void writeRoster(Roster roster) {
         List<String> result = new ArrayList<>();
         File rosterFile = new File(baseDirPath, "roster");
         try {
             FileWriter writer = new FileWriter(rosterFile);
-            for (RosterItem item : roster.getRoster()) {
+            for (int i = 0; i < roster.size(); i ++) {
+                RosterItem item = roster.getByIndex(i);
                 writer.write(item.getValue() + LineSeparator.Unix);
             }
             writer.close();
@@ -122,7 +123,7 @@ public class ClientImpl extends Client {
     }
 
     @Override
-    public RosterImpl getRoster() {
+    public Roster getRoster() {
         return roster;
     }
 
