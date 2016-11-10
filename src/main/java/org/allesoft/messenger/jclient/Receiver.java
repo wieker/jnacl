@@ -42,7 +42,7 @@ public class Receiver {
                         System.out.println("From:" + Hex.HEX.encode(senderKey));
                         System.out.println("To:" + Hex.HEX.encode(receiverKey));
                     }
-                } catch (IOException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }).start();
