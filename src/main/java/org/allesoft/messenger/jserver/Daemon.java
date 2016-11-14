@@ -18,6 +18,10 @@ public class Daemon {
                 ServerSocket serverSocket = new ServerSocket(port);
                 while (true) {
                     Socket clientSocket = serverSocket.accept();
+                    clientSocket.getOutputStream().write(2);
+                    System.out.println("Remote client: " + clientSocket.getRemoteSocketAddress());
+                    System.out.println("Prescan server: " + clientSocket.getInputStream().read());
+                    System.out.println("Accepted socket");
                     clients.add(clientSocket);
                     workWith(clientSocket);
                 }

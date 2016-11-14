@@ -52,6 +52,7 @@ public class SendTest {
 
         Receiver receiver = new Receiver("localhost", 6667, box1);
         Receiver sender = new Receiver("localhost", 6667, box2);
+        Thread.sleep(1000);
         sender.sendPacket(Hex.HEX.decode("0FAB22"));
 
         Thread.sleep(5000l);
