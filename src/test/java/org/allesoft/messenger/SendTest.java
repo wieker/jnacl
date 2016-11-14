@@ -4,14 +4,9 @@ import org.abstractj.kalium.crypto.Box;
 import org.abstractj.kalium.encoders.Encoder;
 import org.abstractj.kalium.encoders.Hex;
 import org.abstractj.kalium.keys.KeyPair;
-import org.allesoft.messenger.jclient.Client;
-import org.allesoft.messenger.jclient.ClientImpl;
-import org.allesoft.messenger.jclient.MessageSender;
-import org.allesoft.messenger.jclient.Receiver;
+import org.allesoft.messenger.jclient.*;
 import org.allesoft.messenger.jserver.Daemon;
 import org.testng.annotations.Test;
-
-import java.util.concurrent.ExecutionException;
 
 /**
  * Created by kabramovich on 26.10.2016.
@@ -50,11 +45,50 @@ public class SendTest {
         Box box1 = new Box(pair2.getPublicKey(), pair1.getPrivateKey());
         Box box2 = new Box(pair1.getPublicKey(), pair2.getPrivateKey());
 
-        Receiver receiver = new Receiver("localhost", 6667, box1);
-        Receiver sender = new Receiver("localhost", 6667, box2);
+        Receiver receiver = new ReceiverImpl("localhost", 6667, box1);
+        Receiver sender = new ReceiverImpl("localhost", 6667, box2);
+        Thread.sleep(1000);
+        sender.sendPacket(Hex.HEX.decode("0FAB22"));
+        Thread.sleep(1000);
+        sender.sendPacket(Hex.HEX.decode("0FAB22"));
+        Thread.sleep(1000);
+        sender.sendPacket(Hex.HEX.decode("0FAB22"));
         Thread.sleep(1000);
         sender.sendPacket(Hex.HEX.decode("0FAB22"));
 
         Thread.sleep(5000l);
+    }
+
+    @Test
+    public void checkPlain() throws Exception {
+        Daemon daemon = new Daemon();
+        daemon.openSocket(6667);
+
+        PlainReceiver receiver1 = new PlainReceiver("localhost", 6667);
+        PlainReceiver receiver2 = new PlainReceiver("localhost", 6667);
+
+        receiver1.sendPacket(Hex.RAW.decode("FF66"));
+        receiver2.sendPacket(Hex.RAW.decode("FF55"));
+
+        Thread.sleep(1000l);
+
+        receiver1.sendPacket(Hex.RAW.decode("FF66"));
+        receiver2.sendPacket(Hex.RAW.decode("FF55"));
+
+        Thread.sleep(1000l);
+
+        receiver1.sendPacket(Hex.RAW.decode("FF66"));
+        receiver2.sendPacket(Hex.RAW.decode("FF55"));
+
+        Thread.sleep(1000l);
+
+        receiver1.sendPacket(Hex.RAW.decode("FF66"));
+        receiver2.sendPacket(Hex.RAW.decode("FF55"));
+
+        Thread.sleep(1000l);
+
+        receiver1.sendPacket(Hex.RAW.decode("FF77"));
+        receiver2.sendPacket(Hex.RAW.decode("FF88"));
+        System.out.println(daemon.toString());
     }
 }
