@@ -5,7 +5,9 @@ import org.abstractj.kalium.encoders.Encoder;
 import org.abstractj.kalium.encoders.Hex;
 import org.abstractj.kalium.keys.KeyPair;
 import org.allesoft.messenger.jclient.*;
+import org.allesoft.messenger.jclient.Client;
 import org.allesoft.messenger.jserver.Daemon;
+import org.allesoft.messenger.pure.*;
 import org.testng.annotations.Test;
 
 /**
@@ -90,5 +92,13 @@ public class SendTest {
         receiver1.sendPacket(Hex.RAW.decode("FF77"));
         receiver2.sendPacket(Hex.RAW.decode("FF88"));
         System.out.println(daemon.toString());
+    }
+
+    @Test
+    public void testX() {
+        Server server = Server.initServer(1055);
+        org.allesoft.messenger.pure.Client c1 = org.allesoft.messenger.pure.Client.connectClient("localhost", 1055);
+        org.allesoft.messenger.pure.Client c2 = org.allesoft.messenger.pure.Client.connectClient("localhost", 1055);
+        c1.sendPacket(Hex.HEX.decode("FF77"));
     }
 }
