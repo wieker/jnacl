@@ -7,6 +7,7 @@ import org.abstractj.kalium.encoders.Hex;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
+import java.security.SecureRandom;
 
 /**
  * Created by wieker on 29.10.16.
@@ -22,18 +23,11 @@ public class ReceiverImpl extends Receiver {
             this.box = box;
             new Thread(() -> {
                 try {
-                    byte[] header = new byte[NaCl.Sodium.NONCE_BYTES + PKT_SIZE_FIELD +
-                            2 * NaCl.Sodium.PUBLICKEY_BYTES];
-                    connection.getOutputStream().write(1);
-                    connection.getInputStream().read(header, 0, header.length);
-                    System.out.println("Prescan peer: " + Hex.HEX.encode(header));
                     while (true) {
-                        /*byte[] header = receiveXBytes(connection.getInputStream(),
+                        byte[] header = receiveXBytes(connection.getInputStream(),
                                 NaCl.Sodium.NONCE_BYTES + PKT_SIZE_FIELD +
-                                2 * NaCl.Sodium.PUBLICKEY_BYTES);*/
-                        int c = connection.getInputStream().read(header, 0, header.length);
-                        System.out.println("Prescan peer: " + Hex.HEX.encode(header));
-                        /*connection.getInputStream().read(header, 0, header.length);
+                                2 * NaCl.Sodium.PUBLICKEY_BYTES);
+                        connection.getInputStream().read(header, 0, header.length);
                         byte[] nonce = new byte[NaCl.Sodium.NONCE_BYTES];
                         System.out.println("Nonce: " + Hex.HEX.encode(nonce));
                         System.arraycopy(header, 0, nonce, 0, NaCl.Sodium.NONCE_BYTES);
@@ -50,7 +44,7 @@ public class ReceiverImpl extends Receiver {
                         byte[] cryptoBody = receiveXBytes(connection.getInputStream(), size);
                         System.out.println("Payload: " + Hex.HEX.encode(cryptoBody));
                         byte[] text = box.decrypt(nonce, cryptoBody);
-                        System.out.println("Received:" + Hex.HEX.encode(text));*/
+                        System.out.println("Received:" + Hex.HEX.encode(text));
                     }
                 } catch (Throwable e) {
                     e.printStackTrace();
@@ -61,7 +55,7 @@ public class ReceiverImpl extends Receiver {
         }
     }
 
-    public byte[] receiveXBytes(InputStream inputStream, int x) throws IOException {
+    public static byte[] receiveXBytes(InputStream inputStream, int x) throws IOException {
         byte[] result = new byte[x];
         int total = 0;
         while (total < result.length) {
@@ -78,7 +72,7 @@ public class ReceiverImpl extends Receiver {
     @Override
     public void sendPacket(byte[] payload) throws IOException {
         connection.getOutputStream().write(payload);
-        /*
+
         byte[] nonce = new byte[NaCl.Sodium.NONCE_BYTES];
         SecureRandom rng = new SecureRandom();
         rng.nextBytes(nonce);
@@ -97,7 +91,7 @@ public class ReceiverImpl extends Receiver {
         connection.getOutputStream().write(key);
         System.out.println("Payload: " + Hex.HEX.encode(cryptoBody));
         connection.getOutputStream().write(cryptoBody);
-        connection.getOutputStream().flush();*/
+        connection.getOutputStream().flush();
     }
 
 }

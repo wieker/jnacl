@@ -100,5 +100,9 @@ public class SendTest {
         org.allesoft.messenger.pure.Client c1 = org.allesoft.messenger.pure.Client.connectClient("localhost", 1055);
         org.allesoft.messenger.pure.Client c2 = org.allesoft.messenger.pure.Client.connectClient("localhost", 1055);
         c1.sendPacket(Hex.HEX.decode("FF77"));
+
+        for (;;) {
+
+        }
     }
 }

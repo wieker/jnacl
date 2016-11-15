@@ -1,5 +1,7 @@
 package org.allesoft.messenger.pure;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -54,5 +56,18 @@ public class Server {
             throw new RuntimeException(e);
         }
         return server;
+    }
+
+    public static byte[] waitPacketWithDBSizeHeader(InputStream inputStream) throws IOException {
+        int size = inputStream.read() << 8 + inputStream.read();
+        byte[] packet = new byte[size];
+        int received = 0;
+        while (received < size) {
+            int c = inputStream.read(packet, received, size - received);
+            if (c < 0) {
+                throw new RuntimeException("Network errors");
+            }
+        }
+        return packet;
     }
 }
