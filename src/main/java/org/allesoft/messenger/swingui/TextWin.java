@@ -28,15 +28,15 @@ public class TextWin extends JFrame {
         newMessageField.setText("");
         content.add(newMessageField);
 
-        JButton addContactButton = new JButton("Done");
-        addContactButton.addActionListener((e) -> {
+        JButton sendButton = new JButton("Done");
+        sendButton.addActionListener((e) -> {
             String text = newMessageField.getText();
             conversationArea.append(LineSeparator.Unix + "My: " + text);
             newMessageField.setText("");
 
             sender.send(text);
         });
-        content.add(addContactButton);
+        content.add(sendButton);
 
         add(content);
 
