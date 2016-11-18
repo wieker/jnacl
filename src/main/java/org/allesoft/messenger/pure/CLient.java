@@ -14,14 +14,15 @@ import java.security.SecureRandom;
  */
 public class Client {
     private Socket socket;
+    private Box cryptoBox;
 
-    private Client() {
-
+    private Client(Box cryptoBox) {
+        this.cryptoBox = cryptoBox;
     }
 
-    public static Client connectClient(String address, int port) {
+    public static Client connectClient(Box box, String address, int port) {
         try {
-            Client client = new Client();
+            Client client = new Client(box);
             client.socket = new Socket(address, port);
             System.out.println("Client started " + client.socket.toString());
             new Thread(() -> {
@@ -31,7 +32,19 @@ public class Client {
                         buf = Server.waitPacketWithDBSizeHeader(client.socket.getInputStream());
                         System.out.println("Received by " + client.socket.toString());
                         System.out.println(Hex.HEX.encode(buf));
-                        Server.sendPacket(client.socket.getOutputStream(), buf);
+
+                        byte[] nonce = new byte[NaCl.Sodium.NONCE_BYTES];
+                        byte[] theirKey = new byte[NaCl.Sodium.PUBLICKEY_BYTES];
+                        byte[] ourKey = new byte[NaCl.Sodium.PUBLICKEY_BYTES];
+                        byte[] cryptoBody = new byte[buf.length - nonce.length - ourKey.length - theirKey.length];
+                        System.arraycopy(buf, 0, nonce, 0, nonce.length);
+                        System.arraycopy(buf, nonce.length, theirKey, 0, theirKey.length);
+                        System.arraycopy(buf, nonce.length + ourKey.length, ourKey, 0, ourKey.length);
+                        System.arraycopy(buf, nonce.length + ourKey.length + theirKey.length, cryptoBody, 0, cryptoBody.length);
+                        byte[] plain = client.cryptoBox.decrypt(nonce, cryptoBody);
+                        System.out.println(Hex.HEX.encode(plain));
+
+                        client.encryptExpensiveAndSendWithKeys(new PublicKey(ourKey), new PublicKey(theirKey), plain);
                     } catch (Exception e) {
                         System.out.println("Exception: " + e);
                     }
@@ -43,14 +56,14 @@ public class Client {
         }
     }
 
-    public void encryptExpensiveAndSendWithKeys(Box box, PublicKey our, PublicKey their,
+    public void encryptExpensiveAndSendWithKeys(PublicKey our, PublicKey their,
                                                 byte[] payload) throws IOException {
         byte[] nonce = new byte[NaCl.Sodium.NONCE_BYTES];
         SecureRandom rng = new SecureRandom();
         rng.nextBytes(nonce);
         byte[] ourKey = our.toBytes();
         byte[] theirKey = their.toBytes();
-        byte[] cryptoBody = box.encrypt(nonce, payload);
+        byte[] cryptoBody = cryptoBox.encrypt(nonce, payload);
         byte[] packet = new byte[nonce.length + ourKey.length + theirKey.length + cryptoBody.length];
         int pos = 0;
         System.arraycopy(nonce, 0, packet, 0, nonce.length);
