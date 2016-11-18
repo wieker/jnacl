@@ -95,7 +95,7 @@ public class SendTest {
     }
 
     @Test
-    public void testX() {
+    public void testX() throws Exception {
         Server server = Server.initServer(1055);
         org.allesoft.messenger.pure.Client c1 = org.allesoft.messenger.pure.Client.connectClient("localhost", 1055);
         org.allesoft.messenger.pure.Client c2 = org.allesoft.messenger.pure.Client.connectClient("localhost", 1055);

@@ -2,6 +2,7 @@ package org.allesoft.messenger.pure;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -29,16 +30,11 @@ public class Server {
                         server.sockets.add(clientSocket);
                         new Thread(() -> {
                             try {
-                                byte[] buf = new byte[1024];
                                 while (true) {
-                                    int c = clientSocket.getInputStream().read(buf, 0, buf.length);
-                                    if (c < 0) {
-                                        server.sockets.remove(clientSocket);
-                                        return;
-                                    }
+                                    byte[] buf = waitPacketWithDBSizeHeader(clientSocket.getInputStream());
                                     for (Socket connected : server.sockets) {
                                         if (connected != clientSocket) {
-                                            connected.getOutputStream().write(buf, 0, c);
+                                            sendPacket(connected.getOutputStream(), buf);
                                         }
                                     }
                                 }
@@ -59,7 +55,15 @@ public class Server {
     }
 
     public static byte[] waitPacketWithDBSizeHeader(InputStream inputStream) throws IOException {
-        int size = inputStream.read() << 8 + inputStream.read();
+        int big = inputStream.read();
+        if (big < 0) {
+            return null;
+        }
+        int little = inputStream.read();
+        if (little < 0) {
+            return null;
+        }
+        int size = (big << 8) + little;
         byte[] packet = new byte[size];
         int received = 0;
         while (received < size) {
@@ -67,7 +71,20 @@ public class Server {
             if (c < 0) {
                 throw new RuntimeException("Network errors");
             }
+            received += c;
         }
         return packet;
+    }
+
+    public static void sendPacket(OutputStream outputStream, byte[] packet) {
+        try {
+            byte[] sizeField = new byte[2];
+            sizeField[0] = (byte) (packet.length >> 8);
+            sizeField[1] = (byte) (packet.length & 0xff);
+            outputStream.write(sizeField);
+            outputStream.write(packet);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }
