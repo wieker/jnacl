@@ -7,6 +7,7 @@ import org.fest.swing.core.Robot;
 import org.fest.swing.core.matcher.FrameMatcher;
 import org.fest.swing.finder.WindowFinder;
 import org.fest.swing.fixture.FrameFixture;
+import org.fest.swing.fixture.JTableFixture;
 import org.fest.swing.launcher.ApplicationLauncher;
 import org.testng.annotations.Test;
 
@@ -20,6 +21,7 @@ public class UITest {
 
     @Test
     public void testUI() throws Exception {
+        String newUserName = "new user";
         ApplicationLauncher.application(SwingUI.class)
                 .withArgs("app-test-1").start();
         Robot robot = BasicRobot.robotWithCurrentAwtHierarchy();
@@ -32,22 +34,22 @@ public class UITest {
 
         FrameFixture addFixture = WindowFinder.findFrame(addContactMatcher).using(robot);
         addFixture.textBox("userIdField").setText("");
-        addFixture.textBox("userIdField").enterText("new user");
+        addFixture.textBox("userIdField").enterText(newUserName);
         assertTrue(addFixture.component().isVisible());
         addFixture.button("addContactDoneButton").click();
         //addFixture.requireNotVisible();
         assertTrue(!addFixture.component().isVisible());
 
         //assertEquals(fixture.table().cell("new user").toString(), "new user");
-        fixture.table().requireCellValue(fixture.table().cell("new user"), "new user");
+        JTableFixture tableFixture = fixture.table();
+        tableFixture.requireCellValue(tableFixture.cell(newUserName), newUserName);
         assertEquals(
                 ((RosterItem)(
-                        fixture
-                                .table()
+                        tableFixture
                                 .component()
                                 .getModel()
                                 .getValueAt(7, 1)))
                         .getValue(),
-                "new user");
+                newUserName);
     }
 }
