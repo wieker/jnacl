@@ -14,6 +14,7 @@ import java.awt.event.MouseEvent;
 public class MainWin extends JFrame {
     public MainWin(Client client) {
         super("Swing messenger");
+        setName("mainWin");
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         //setSize(300, 500);
 
@@ -24,6 +25,7 @@ public class MainWin extends JFrame {
         content.add(ipLabel);
 
         JButton connectButton = new JButton("Connect");
+        connectButton.setName("connectButton");
         connectButton.addActionListener( (e) -> {
             client.connect(ipLabel.getText(), 50505);
         });
@@ -49,6 +51,7 @@ public class MainWin extends JFrame {
         content.add(rosterTable);
 
         JButton addContactButton = new JButton("Add Contact");
+        addContactButton.setName("addContactButton");
         addContactButton.addActionListener( (e) -> {
                 new AddWin(rosterTableModel, client);
         });
