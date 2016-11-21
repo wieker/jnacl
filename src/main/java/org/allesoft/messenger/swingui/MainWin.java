@@ -5,6 +5,7 @@ import org.allesoft.messenger.jclient.Client;
 import org.allesoft.messenger.jclient.RosterItemImpl;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -19,20 +20,26 @@ public class MainWin extends JFrame {
         //setSize(300, 500);
 
         JPanel content = new JPanel();
-        content.setLayout(new BoxLayout(content, BoxLayout.PAGE_AXIS));
+        content.setLayout(new BorderLayout());
+        JPanel connectServer = new JPanel();
+        connectServer.setLayout(new BorderLayout());
 
         JTextField ipLabel = new JTextField("127.0.0.1");
-        content.add(ipLabel);
+        connectServer.add(ipLabel, BorderLayout.NORTH);
 
         JButton connectButton = new JButton("Connect");
         connectButton.setName("connectButton");
         connectButton.addActionListener( (e) -> {
             client.connect(ipLabel.getText(), 50505);
         });
-        content.add(connectButton);
+        connectServer.add(connectButton, BorderLayout.SOUTH);
+        content.add(connectServer, BorderLayout.NORTH);
+
+        JPanel rosterPanel = new JPanel();
+        rosterPanel.setLayout(new BorderLayout());
 
         JTextField publicKeyLabel = new JTextField(NaCl.asHex(client.getPublicKey()));
-        content.add(publicKeyLabel);
+        rosterPanel.add(publicKeyLabel, BorderLayout.NORTH);
 
         RosterTableModel rosterTableModel = new RosterTableModel(client.getRoster());
         JTable rosterTable = new JTable(rosterTableModel);
@@ -48,14 +55,15 @@ public class MainWin extends JFrame {
                 }
             }
         });
-        content.add(rosterTable);
+        rosterPanel.add(rosterTable, BorderLayout.CENTER);
 
         JButton addContactButton = new JButton("Add Contact");
         addContactButton.setName("addContactButton");
         addContactButton.addActionListener( (e) -> {
                 new AddWin(rosterTableModel, client);
         });
-        content.add(addContactButton);
+        rosterPanel.add(addContactButton, BorderLayout.SOUTH);
+        content.add(rosterPanel, BorderLayout.CENTER);
 
         add(content);
 
