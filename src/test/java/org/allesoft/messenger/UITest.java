@@ -12,6 +12,7 @@ import org.fest.swing.launcher.ApplicationLauncher;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import java.awt.*;
 import java.io.File;
 
 import static org.testng.Assert.assertEquals;
@@ -34,24 +35,16 @@ public class UITest {
                 .withArgs("app-test-1").start();
         robot = BasicRobot.robotWithCurrentAwtHierarchy();
         matcher = FrameMatcher.withName("mainWin");
-        addContactMatcher = FrameMatcher.withName("addWin");
+        addContactMatcher = FrameMatcher.withName("addWin").andShowing();
     }
 
     @Test
     public void checkNewUser() throws Exception {
-        String newUserName = "new user " + System.currentTimeMillis();
+        String newUserName = "new user";
 
         FrameFixture fixture = WindowFinder.findFrame(matcher).using(robot);
-        fixture.button("connectButton").click();
-        fixture.button("addContactButton").click();
-
-        FrameFixture addFixture = WindowFinder.findFrame(addContactMatcher).using(robot);
-        addFixture.textBox("userIdField").setText("");
-        addFixture.textBox("userIdField").enterText(newUserName);
-        assertTrue(addFixture.component().isVisible());
-        addFixture.button("addContactDoneButton").click();
-        //addFixture.requireNotVisible();
-        assertTrue(!addFixture.component().isVisible());
+        createUser(newUserName, fixture);
+        createUser(newUserName, fixture);
 
         //assertEquals(fixture.table().cell("new user").toString(), "new user");
         JTableFixture tableFixture = fixture.table();
@@ -65,5 +58,19 @@ public class UITest {
                                 .getValueAt(0, 1)))
                         .getValue(),
                 newUserName);
+    }
+
+    private void createUser(String newUserName, FrameFixture fixture) {
+        fixture.button("connectButton").click();
+        fixture.button("addContactButton").click();
+
+        FrameFixture addFixture = WindowFinder.findFrame(addContactMatcher).using(robot);
+        addFixture.textBox("userIdField").setText("");
+        addFixture.textBox("userIdField").enterText(newUserName);
+        assertTrue(addFixture.component().isVisible());
+        addFixture.button("addContactDoneButton").click();
+        //addFixture.requireNotVisible();
+        assertTrue(!addFixture.component().isVisible());
+        addFixture.label().foreground().requireEqualTo(Color.RED);
     }
 }
