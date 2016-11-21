@@ -73,12 +73,15 @@ public class RosterTableModel implements TableModel {
         changeListeners.remove(l);
     }
 
-    public void add(RosterItem rosterItem) {
-        roster.add(rosterItem);
+    public boolean add(RosterItem rosterItem) {
+        if (!roster.add(rosterItem)) {
+            return false;
+        }
         for (TableModelListener l : changeListeners) {
             l.tableChanged(new TableModelEvent(this, roster.size(),
                     roster.size(), TableModelEvent.ALL_COLUMNS, TableModelEvent.INSERT));
         }
+        return true;
     }
 
     public String get(int index) {

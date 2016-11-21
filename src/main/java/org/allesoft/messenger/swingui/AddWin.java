@@ -4,6 +4,7 @@ import org.allesoft.messenger.jclient.Client;
 import org.allesoft.messenger.jclient.RosterItemImpl;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.WindowEvent;
 
 /**
@@ -24,10 +25,18 @@ public class AddWin extends JFrame {
         userIdField.setText("User ID");
         content.add(userIdField);
 
+        JLabel validationLabel = new JLabel();
+        validationLabel.setName("validationLabel");
+        content.add(validationLabel);
+
         JButton addContactDoneButton = new JButton("Done");
         addContactDoneButton.setName("addContactDoneButton");
         addContactDoneButton.addActionListener((e) -> {
-            model.add(new RosterItemImpl(userIdField.getText()));
+            if (!model.add(new RosterItemImpl(userIdField.getText()))) {
+                validationLabel.setText("Duplicated user name");
+                validationLabel.setForeground(Color.RED);
+                return;
+            }
             client.writeRoster(model.getRoster());
             AddWin.this.dispatchEvent(new WindowEvent(AddWin.this, WindowEvent.WINDOW_CLOSING));
         });

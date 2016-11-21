@@ -6,7 +6,7 @@ package org.allesoft.messenger.jclient;
 public interface Roster {
     int size();
 
-    void add(RosterItem item);
+    boolean add(RosterItem item);
 
     RosterItem getByIndex(int index);
 

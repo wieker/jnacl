@@ -20,11 +20,17 @@ public class RosterImpl implements Roster {
     }
 
     @Override
-    public void add(RosterItem item) {
+    public boolean add(RosterItem item) {
+        for (RosterItem existing : roster) {
+            if (existing.getValue().equalsIgnoreCase(item.getValue().trim())) {
+                return false;
+            }
+        }
         roster.add(item);
         for (RosterEventListener listener : listeners) {
             listener.fire();
         }
+        return true;
     }
 
     @Override
