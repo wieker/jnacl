@@ -43,8 +43,8 @@ public class UITest {
         String newUserName = "new user";
 
         FrameFixture fixture = WindowFinder.findFrame(matcher).using(robot);
-        createUser(newUserName, fixture);
-        createUser(newUserName, fixture);
+        createUser(newUserName, fixture, true);
+        createUser(newUserName, fixture, false);
 
         //assertEquals(fixture.table().cell("new user").toString(), "new user");
         JTableFixture tableFixture = fixture.table();
@@ -60,7 +60,7 @@ public class UITest {
                 newUserName);
     }
 
-    private void createUser(String newUserName, FrameFixture fixture) {
+    private void createUser(String newUserName, FrameFixture fixture, boolean expectSuccess) {
         fixture.button("connectButton").click();
         fixture.button("addContactButton").click();
 
@@ -70,7 +70,10 @@ public class UITest {
         assertTrue(addFixture.component().isVisible());
         addFixture.button("addContactDoneButton").click();
         //addFixture.requireNotVisible();
-        assertTrue(!addFixture.component().isVisible());
-        addFixture.label().foreground().requireEqualTo(Color.RED);
+        if (expectSuccess) {
+            assertTrue(!addFixture.component().isVisible());
+        } else {
+            addFixture.label().foreground().requireEqualTo(Color.RED);
+        }
     }
 }
