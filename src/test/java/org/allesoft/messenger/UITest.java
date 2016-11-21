@@ -9,7 +9,10 @@ import org.fest.swing.finder.WindowFinder;
 import org.fest.swing.fixture.FrameFixture;
 import org.fest.swing.fixture.JTableFixture;
 import org.fest.swing.launcher.ApplicationLauncher;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+
+import java.io.File;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
@@ -19,14 +22,24 @@ import static org.testng.Assert.assertTrue;
  */
 public class UITest {
 
-    @Test
-    public void testUI() throws Exception {
-        String newUserName = "new user";
+    private Robot robot;
+    private FrameMatcher matcher;
+    private FrameMatcher addContactMatcher;
+
+    @BeforeClass
+    public void prepare() throws Exception {
+        System.out.println(new File(".").getAbsolutePath());
+        new File("./app-test-1/roster").delete();
         ApplicationLauncher.application(SwingUI.class)
                 .withArgs("app-test-1").start();
-        Robot robot = BasicRobot.robotWithCurrentAwtHierarchy();
-        FrameMatcher matcher = FrameMatcher.withName("mainWin");
-        FrameMatcher addContactMatcher = FrameMatcher.withName("addWin");
+        robot = BasicRobot.robotWithCurrentAwtHierarchy();
+        matcher = FrameMatcher.withName("mainWin");
+        addContactMatcher = FrameMatcher.withName("addWin");
+    }
+
+    @Test
+    public void checkNewUser() throws Exception {
+        String newUserName = "new user " + System.currentTimeMillis();
 
         FrameFixture fixture = WindowFinder.findFrame(matcher).using(robot);
         fixture.button("connectButton").click();
@@ -43,12 +56,13 @@ public class UITest {
         //assertEquals(fixture.table().cell("new user").toString(), "new user");
         JTableFixture tableFixture = fixture.table();
         tableFixture.requireCellValue(tableFixture.cell(newUserName), newUserName);
+        Thread.sleep(5000l);
         assertEquals(
-                ((RosterItem)(
+                ((RosterItem) (
                         tableFixture
                                 .component()
                                 .getModel()
-                                .getValueAt(7, 1)))
+                                .getValueAt(0, 1)))
                         .getValue(),
                 newUserName);
     }
