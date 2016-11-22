@@ -1,9 +1,6 @@
 package org.allesoft.messenger.swingui;
 
-import org.allesoft.messenger.jclient.Roster;
-import org.allesoft.messenger.jclient.RosterImpl;
-import org.allesoft.messenger.jclient.RosterItem;
-import org.allesoft.messenger.jclient.RosterItemImpl;
+import org.allesoft.messenger.jclient.*;
 
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
@@ -73,15 +70,16 @@ public class RosterTableModel implements TableModel {
         changeListeners.remove(l);
     }
 
-    public boolean add(RosterItem rosterItem) {
-        if (!roster.add(rosterItem)) {
-            return false;
+    public RosterError add(RosterItem rosterItem) {
+        RosterError result = roster.add(rosterItem);
+        if (!result.equals(RosterError.OK)) {
+            return result;
         }
         for (TableModelListener l : changeListeners) {
             l.tableChanged(new TableModelEvent(this, roster.size(),
                     roster.size(), TableModelEvent.ALL_COLUMNS, TableModelEvent.INSERT));
         }
-        return true;
+        return result;
     }
 
     public String get(int index) {

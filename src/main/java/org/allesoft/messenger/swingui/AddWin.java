@@ -1,6 +1,7 @@
 package org.allesoft.messenger.swingui;
 
 import org.allesoft.messenger.jclient.Client;
+import org.allesoft.messenger.jclient.RosterError;
 import org.allesoft.messenger.jclient.RosterItemImpl;
 
 import javax.swing.*;
@@ -32,8 +33,9 @@ public class AddWin extends JFrame {
         JButton addContactDoneButton = new JButton("Done");
         addContactDoneButton.setName("addContactDoneButton");
         addContactDoneButton.addActionListener((e) -> {
-            if (!model.add(new RosterItemImpl(userIdField.getText()))) {
-                validationLabel.setText("Duplicated user name");
+            RosterError error = model.add(new RosterItemImpl(userIdField.getText()));
+            if (!error.equals(RosterError.OK)) {
+                validationLabel.setText(error.getMessage());
                 validationLabel.setForeground(Color.RED);
                 pack();
                 return;

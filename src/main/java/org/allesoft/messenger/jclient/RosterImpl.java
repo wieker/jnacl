@@ -20,17 +20,23 @@ public class RosterImpl implements Roster {
     }
 
     @Override
-    public boolean add(RosterItem item) {
+    public RosterError add(RosterItem item) {
+        if (item.getValue().trim().isEmpty()) {
+            return RosterError.EMPTY_NAME;
+        }
+        if (!item.getValue().trim().matches("([0-9][a-f]){64}")) {
+            return RosterError.WRONG_SYMBOL;
+        }
         for (RosterItem existing : roster) {
             if (existing.getValue().equalsIgnoreCase(item.getValue().trim())) {
-                return false;
+                return RosterError.DUPLICATE_ENTRY;
             }
         }
         roster.add(item);
         for (RosterEventListener listener : listeners) {
             listener.fire();
         }
-        return true;
+        return RosterError.OK;
     }
 
     @Override
