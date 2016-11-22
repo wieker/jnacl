@@ -43,8 +43,8 @@ public class UITest {
         String newUserName = "new user";
 
         FrameFixture fixture = WindowFinder.findFrame(matcher).using(robot);
-        createUser(newUserName, fixture, true);
-        createUser(newUserName, fixture, false);
+        createUser(newUserName, fixture, true, null);
+        createUser(newUserName, fixture, false, "Duplicated user name");
 
         //assertEquals(fixture.table().cell("new user").toString(), "new user");
         JTableFixture tableFixture = fixture.table();
@@ -60,7 +60,8 @@ public class UITest {
                 newUserName);
     }
 
-    private void createUser(String newUserName, FrameFixture fixture, boolean expectSuccess) {
+    private void createUser(String newUserName, FrameFixture fixture, boolean expectSuccess,
+                            String expectedErrorMessage) {
         fixture.button("connectButton").click();
         fixture.button("addContactButton").click();
 
@@ -74,6 +75,17 @@ public class UITest {
             assertTrue(!addFixture.component().isVisible());
         } else {
             addFixture.label().foreground().requireEqualTo(Color.RED);
+            addFixture.label().requireText(expectedErrorMessage);
+            addFixture.close();
         }
+    }
+
+    @Test
+    public void checkUsernameAllowedSymbols() throws Exception {
+        String newUserName = "";
+
+        FrameFixture fixture = WindowFinder.findFrame(matcher).using(robot);
+        createUser(newUserName, fixture, false, "Empty user name");
+        Thread.sleep(5000l);
     }
 }
