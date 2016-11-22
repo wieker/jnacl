@@ -11,7 +11,7 @@ import java.awt.event.WindowEvent;
  * Created by kabramovich on 18.10.2016.
  */
 public class AddWin extends JFrame {
-    public AddWin(RosterTableModel model, Client client) {
+    public AddWin(RosterTableModel model, Client client, JFrame mainWin) {
         super("Add contact");
         setName("addWin");
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -35,9 +35,11 @@ public class AddWin extends JFrame {
             if (!model.add(new RosterItemImpl(userIdField.getText()))) {
                 validationLabel.setText("Duplicated user name");
                 validationLabel.setForeground(Color.RED);
+                pack();
                 return;
             }
             client.writeRoster(model.getRoster());
+            mainWin.pack();
             AddWin.this.dispatchEvent(new WindowEvent(AddWin.this, WindowEvent.WINDOW_CLOSING));
         });
         content.add(addContactDoneButton);

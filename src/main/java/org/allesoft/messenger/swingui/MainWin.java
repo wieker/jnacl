@@ -60,7 +60,7 @@ public class MainWin extends JFrame {
         JButton addContactButton = new JButton("Add Contact");
         addContactButton.setName("addContactButton");
         addContactButton.addActionListener( (e) -> {
-                new AddWin(rosterTableModel, client);
+                new AddWin(rosterTableModel, client, this);
         });
         rosterPanel.add(addContactButton, BorderLayout.SOUTH);
         content.add(rosterPanel, BorderLayout.CENTER);
