@@ -15,13 +15,14 @@ public class RosterTableModel implements TableModel {
     Roster roster;
     List<TableModelListener> changeListeners = new ArrayList<>();
 
-    public RosterTableModel(Roster roster) {
+    public RosterTableModel(Roster roster, RosterUpdateListener updateListener) {
         this.roster = roster;
         roster.addListener(() -> {
             for (TableModelListener l : changeListeners) {
                 l.tableChanged(new TableModelEvent(this, roster.size(),
                         roster.size(), TableModelEvent.ALL_COLUMNS, TableModelEvent.INSERT));
             }
+            updateListener.update();
         });
     }
 
@@ -74,10 +75,6 @@ public class RosterTableModel implements TableModel {
         RosterError result = roster.add(rosterItem);
         if (!result.equals(RosterError.OK)) {
             return result;
-        }
-        for (TableModelListener l : changeListeners) {
-            l.tableChanged(new TableModelEvent(this, roster.size(),
-                    roster.size(), TableModelEvent.ALL_COLUMNS, TableModelEvent.INSERT));
         }
         return result;
     }

@@ -13,6 +13,9 @@ import java.awt.event.MouseEvent;
  * Created by kabramovich on 18.10.2016.
  */
 public class MainWin extends JFrame {
+
+    private JTable rosterTable = null;
+
     public MainWin(Client client) {
         super("Swing messenger");
         setName("mainWin");
@@ -41,8 +44,9 @@ public class MainWin extends JFrame {
         JTextField publicKeyLabel = new JTextField(NaCl.asHex(client.getPublicKey()));
         rosterPanel.add(publicKeyLabel, BorderLayout.NORTH);
 
-        RosterTableModel rosterTableModel = new RosterTableModel(client.getRoster());
-        JTable rosterTable = new JTable(rosterTableModel);
+        RosterTableModel rosterTableModel = new RosterTableModel(client.getRoster(),
+                () -> rosterTable.repaint());
+        rosterTable = new JTable(rosterTableModel);
         rosterTable.setDefaultRenderer(RosterItemImpl.class,
                 new RosterTableRenderer(rosterTableModel));
         rosterTable.addMouseListener(new MouseAdapter() {

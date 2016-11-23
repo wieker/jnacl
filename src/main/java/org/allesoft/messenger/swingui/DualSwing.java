@@ -10,7 +10,7 @@ import org.allesoft.messenger.pure.Server;
  * Created by tatyana on 11/23/2016.
  */
 public class DualSwing {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         Server.initServer(10505);
         Client c1 = mainWinBuilder("c1");
         Client c2 = mainWinBuilder("c2");
