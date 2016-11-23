@@ -15,9 +15,13 @@ public class FTPLayer implements Layer {
     File fileToTransfer;
     byte[] memoryToTransfer;
     public static final int CHUNK_SIZE = 16 * 1024 - 1;
+    int received = 0;
+    int expected = 0;
+    FTPComplete complete;
 
-    public FTPLayer(FileAcceptRequest fileAcceptRequest) {
+    public FTPLayer(FileAcceptRequest fileAcceptRequest, FTPComplete complete) {
         this.fileAcceptRequest = fileAcceptRequest;
+        this.complete = complete;
         queue = InfiniThreadFactory.infiniThreadWithQueue((packet) -> {
             System.out.println("Received packet");
             if (state.equals(FTPLayerState.FREE) && (byte) FTPModeHeader.START.ordinal() == packet[0] && fileAcceptRequest != null) {
@@ -25,7 +29,7 @@ public class FTPLayer implements Layer {
                 byte[] fileNameCode = new byte[packet.length - 8 - 1];
                 System.arraycopy(packet, 9, fileNameCode, 0, fileNameCode.length);
                 state = FTPLayerState.REQUEST_RECEIVED;
-                fileAcceptRequest.accept(this, new String(fileNameCode), size);
+                fileAcceptRequest.accept(this, new String(fileNameCode), (int) size);
             }
             if (state.equals(FTPLayerState.REQUEST_SENT) && FTPModeHeader.ACCEPT.ordinal() == packet[0]) {
                 if (fileToTransfer != null) {
@@ -68,6 +72,17 @@ public class FTPLayer implements Layer {
             if (state.equals(FTPLayerState.TRANSFER) && FTPModeHeader.PART.ordinal() == packet[0]) {
                 if (fileToTransfer != null) {
                     System.out.println("file chunk received");
+                    received += packet.length - 1;
+                }
+                if (memoryToTransfer != null) {
+                    System.arraycopy(packet, 1, memoryToTransfer, received, packet.length - 1);
+                    received += packet.length - 1;
+                }
+                if (received >= memoryToTransfer.length) {
+                    complete.complete(this);
+                    fileToTransfer = null;
+                    memoryToTransfer = null;
+                    state = FTPLayerState.FREE;
                 }
             }
         });
@@ -122,6 +137,7 @@ public class FTPLayer implements Layer {
         memoryToTransfer = memory;
         bottom.sendPacket(packet);
         state = FTPLayerState.TRANSFER;
+        received = 0;
     }
 
     @Override
@@ -137,5 +153,9 @@ public class FTPLayer implements Layer {
     @Override
     public void setBottom(Layer layer) {
         bottom = layer;
+    }
+
+    public byte[] getMemoryToTransfer() {
+        return memoryToTransfer;
     }
 }
