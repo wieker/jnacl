@@ -11,15 +11,18 @@ public class ChannelMux implements Layer {
     Layer top;
     Layer bottom;
     BlockingQueue<byte[]> queue;
-    List<Layer> channels = new ArrayList<>();
+    Layer[] channels = new Layer[256];
 
     public ChannelMux(Layer bottom) {
         this.bottom = bottom;
         queue = InfiniThreadFactory.infiniThreadWithQueue((packet) -> {
             int channel = packet[0];
+            if (channels[channel] == null) {
+                return;
+            }
             byte[] ost = new byte[packet.length - 1];
             System.arraycopy(packet, 1, ost, 0, ost.length);
-            channels.get(channel).getWaitingQueue().add(packet);
+            channels[channel].getWaitingQueue().add(ost);
         });
     }
 
@@ -47,11 +50,10 @@ public class ChannelMux implements Layer {
 
     @Override
     public void setBottom(Layer layer) {
-
+        bottom = layer;
     }
 
-    public int addChannel(Layer layer) {
-        channels.add(layer);
-        return channels.size() - 1;
+    public void addChannel(int channel, Layer layer) {
+        channels[channel] = layer;
     }
 }

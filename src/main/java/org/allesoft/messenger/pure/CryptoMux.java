@@ -45,7 +45,7 @@ public class CryptoMux implements Layer {
 
     @Override
     public void setBottom(Layer layer) {
-
+        bottom = layer;
     }
 
     public void addPeer(PublicKey key, Layer layer) {

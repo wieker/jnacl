@@ -1,9 +1,6 @@
 package org.allesoft.messenger.pure;
 
-import org.abstractj.kalium.encoders.Hex;
-
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
@@ -37,9 +34,10 @@ public class InfiniThreadFactory {
         return packetsQueue;
     }
 
-    public static Layer stabLayerWithReceive(Layer bottom, InfiniThreadBodyWithQueue body) {
+    public static Layer stabLayerWithReceive(InfiniThreadBodyWithQueue body) {
         return new Layer() {
             BlockingQueue<byte[]> queue;
+            Layer bottom;
 
             {
                 queue = InfiniThreadFactory.infiniThreadWithQueue(body);
@@ -53,6 +51,31 @@ public class InfiniThreadFactory {
             @Override
             public BlockingQueue<byte[]> getWaitingQueue() {
                 return queue;
+            }
+
+            @Override
+            public void setTop(Layer layer) {
+
+            }
+
+            @Override
+            public void setBottom(Layer layer) {
+                bottom = layer;
+            }
+        };
+    }
+
+    public static Layer stabLayerWithSend(InfiniThreadBodyWithQueue body) {
+        return new Layer() {
+
+            @Override
+            public void sendPacket(byte[] packet) throws Exception {
+                body.body(packet);
+            }
+
+            @Override
+            public BlockingQueue<byte[]> getWaitingQueue() {
+                return null;
             }
 
             @Override

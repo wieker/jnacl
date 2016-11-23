@@ -31,6 +31,6 @@ public class EchoLayer implements Layer {
 
     @Override
     public void setBottom(Layer layer) {
-
+        bottom = layer;
     }
 }

@@ -115,13 +115,20 @@ public class ClientImpl extends Client {
     @Override
     public MessageSender addConversation(String userId, MessageReceiver receiver) {
         ChannelMux channelMux = getChannelMux(userId);
-        int textChannel = channelMux.addChannel(InfiniThreadFactory.stabLayerWithReceive(channelMux,
+        int textChannel = 1;
+        channelMux.addChannel(textChannel, InfiniThreadFactory.stabLayerWithReceive(
                 (packet) -> receiver.receive(new String(packet))));
         return text -> {
             InfiniThreadFactory.tryItNow(() -> {
                 channelMux.sendPacket(textChannel, text.getBytes());
             });
         };
+    }
+
+    public void registerChannel(String userId, int channel, Layer layer) {
+        ChannelMux channelMux = getChannelMux(userId);
+        channelMux.addChannel(channel, layer);
+        layer.setBottom(InfiniThreadFactory.stabLayerWithSend((packet) -> channelMux.sendPacket(channel, packet)));
     }
 
     private ChannelMux getChannelMux(String userId) {
