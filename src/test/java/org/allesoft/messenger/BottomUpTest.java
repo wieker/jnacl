@@ -12,22 +12,6 @@ import org.testng.annotations.Test;
 public class BottomUpTest {
 
     @Test
-    public void testX() throws Exception {
-        KeyPair pair1 = new KeyPair();
-        KeyPair pair2 = new KeyPair();
-        Box box = new Box(pair2.getPublicKey(), pair1.getPrivateKey());
-
-        Server server = Server.initServer(1055);
-        org.allesoft.messenger.pure.Client c1 = org.allesoft.messenger.pure.Client.connectClient(box, "localhost", 1055);
-        org.allesoft.messenger.pure.Client c2 = org.allesoft.messenger.pure.Client.connectClient(box, "localhost", 1055);
-        c1.encryptExpensiveAndSendWithKeys(pair1.getPublicKey(), pair2.getPublicKey(), Hex.HEX.decode("FF77"));
-
-        for (;;) {
-
-        }
-    }
-
-    @Test
     public void testY() throws Exception {
         KeyPair pair1 = new KeyPair();
         KeyPair pair2 = new KeyPair();
