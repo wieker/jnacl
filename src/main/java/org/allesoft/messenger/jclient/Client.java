@@ -8,7 +8,7 @@ import org.allesoft.messenger.pure.Layer;
 public abstract class Client {
     public abstract void writeRoster(Roster roster);
 
-    public abstract void connect(String address, Integer port);
+    public abstract Client connect(String address, Integer port);
 
     public abstract Roster getRoster();
 

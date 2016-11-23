@@ -101,10 +101,11 @@ public class ClientImpl extends Client {
     }
 
     @Override
-    public void connect(String address, Integer port) {
+    public ClientImpl connect(String address, Integer port) {
         Layer linkLayer = ClientPacketLayer.connectClient(address, port);
         muxLayer = new CryptoMux(linkLayer);
         linkLayer.setTop(muxLayer);
+        return this;
     }
 
     @Override

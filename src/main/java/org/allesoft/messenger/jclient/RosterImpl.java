@@ -24,7 +24,7 @@ public class RosterImpl implements Roster {
         if (item.getValue().trim().isEmpty()) {
             return RosterError.EMPTY_NAME;
         }
-        if (!item.getValue().trim().matches("([0-9][a-f]){64}")) {
+        if (!item.getValue().trim().matches("([0-9a-f]){64}")) {
             return RosterError.WRONG_SYMBOL;
         }
         for (RosterItem existing : roster) {
