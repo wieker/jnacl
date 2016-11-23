@@ -114,11 +114,13 @@ public class ClientImpl extends Client {
         Layer cryptoLayer = new CryptoLayer(new KeyPair(privateKey), new PublicKey(userId));
         muxLayer.addPeer(new PublicKey(userId), cryptoLayer);
         cryptoLayer.setBottom(muxLayer);
-        cryptoLayer.setTop(InfiniThreadFactory.stabLayerWithReceive(cryptoLayer,
+        ChannelMux channelMux = new ChannelMux(cryptoLayer);
+        cryptoLayer.setTop(channelMux);
+        int textChannel = channelMux.addChannel(InfiniThreadFactory.stabLayerWithReceive(cryptoLayer,
                 (packet) -> receiver.receive(new String(packet))));
         return text -> {
             try {
-                cryptoLayer.sendPacket(text.getBytes());
+                channelMux.sendPacket(textChannel, text.getBytes());
             } catch (Exception e) {
                 System.out.println("Exception");
                 throw new RuntimeException(e);
