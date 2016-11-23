@@ -17,12 +17,12 @@ public class ClientPacketLayer implements Layer {
         try {
             ClientPacketLayer layer = new ClientPacketLayer();
             layer.socket = new Socket(address, port);
-            System.out.println("Client started " + layer.socket.toString());
+            //System.out.println("Client started " + layer.socket.toString());
             InfiniThreadFactory.infiniThread(() -> {
                 byte[] buf;
                 buf = Server.waitPacketWithDBSizeHeader(layer.getSocket().getInputStream());
-                System.out.println("Received by " + layer.getSocket().toString());
-                System.out.println(Hex.HEX.encode(buf));
+                //System.out.println("Received by " + layer.getSocket().toString());
+                //System.out.println(Hex.HEX.encode(buf));
 
                 if (layer.top != null) {
                     layer.top.getWaitingQueue().add(buf);

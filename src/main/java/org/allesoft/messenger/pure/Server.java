@@ -21,36 +21,28 @@ public class Server {
 
     public static Server initServer(int port) {
         Server server = new Server();
-        try {
+        InfiniThreadFactory.tryItNow(() -> {
             server.serverSocket = new ServerSocket(port);
-            new Thread(() -> {
-                try {
-                    while (true) {
-                        Socket clientSocket = server.serverSocket.accept();
-                        server.sockets.add(clientSocket);
-                        new Thread(() -> {
-                            try {
-                                while (true) {
-                                    byte[] buf = waitPacketWithDBSizeHeader(clientSocket.getInputStream());
-                                    for (Socket connected : server.sockets) {
-                                        if (connected != clientSocket) {
-                                            sendPacket(connected.getOutputStream(), buf);
-                                        }
-                                    }
+            InfiniThreadFactory.infiniThread(() -> {
+                Socket clientSocket = server.serverSocket.accept();
+                server.sockets.add(clientSocket);
+                new Thread(() -> {
+                    try {
+                        while (true) {
+                            byte[] buf = waitPacketWithDBSizeHeader(clientSocket.getInputStream());
+                            for (Socket connected : server.sockets) {
+                                if (connected != clientSocket) {
+                                    sendPacket(connected.getOutputStream(), buf);
                                 }
-                            } catch (Exception e) {
-                                server.sockets.remove(clientSocket);
-                                System.out.println("Exception: " + e);
                             }
-                        }).start();
+                        }
+                    } catch (Exception e) {
+                        server.sockets.remove(clientSocket);
+                        System.out.println("Exception: " + e);
                     }
-                } catch (Exception e) {
-                    System.out.println("Exception: " + e);
-                }
-            }).start();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+                }).start();
+            });
+        });
         return server;
     }
 

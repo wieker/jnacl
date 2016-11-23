@@ -34,7 +34,7 @@ public class CryptoLayer implements Layer {
             System.arraycopy(packet, nonce.length + ourKey.length, ourKey, 0, ourKey.length);
             System.arraycopy(packet, nonce.length + ourKey.length + theirKey.length, cryptoBody, 0, cryptoBody.length);
             byte[] plain = box.decrypt(nonce, cryptoBody);
-            System.out.println(Hex.HEX.encode(plain));
+            //System.out.println(Hex.HEX.encode(plain));
 
             top.getWaitingQueue().add(plain);
         });
