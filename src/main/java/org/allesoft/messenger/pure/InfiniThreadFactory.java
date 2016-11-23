@@ -10,7 +10,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  * Created by kabramovich on 22.11.2016.
  */
 public class InfiniThreadFactory {
-    static void infiniThread(InfiniThreadBody body) {
+    public static void infiniThread(InfiniThreadBody body) {
         new Thread(() -> {
             while (true) {
                 try {
@@ -22,7 +22,7 @@ public class InfiniThreadFactory {
         }).start();
     }
 
-    static BlockingQueue<byte[]> infiniThreadWithQueue(InfiniThreadBodyWithQueue body) {
+    public static BlockingQueue<byte[]> infiniThreadWithQueue(InfiniThreadBodyWithQueue body) {
         BlockingQueue<byte[]> packetsQueue = new LinkedBlockingQueue<>();
         new Thread(() -> {
             while (true) {
@@ -35,5 +35,44 @@ public class InfiniThreadFactory {
             }
         }).start();
         return packetsQueue;
+    }
+
+    public static Layer stabLayerWithReceive(Layer bottom, InfiniThreadBodyWithQueue body) {
+        return new Layer() {
+            BlockingQueue<byte[]> queue;
+
+            {
+                queue = InfiniThreadFactory.infiniThreadWithQueue(body);
+            }
+
+            @Override
+            public void sendPacket(byte[] packet) throws Exception {
+                bottom.sendPacket(packet);
+            }
+
+            @Override
+            public BlockingQueue<byte[]> getWaitingQueue() {
+                return queue;
+            }
+
+            @Override
+            public void setTop(Layer layer) {
+
+            }
+
+            @Override
+            public void setBottom(Layer layer) {
+
+            }
+        };
+    }
+
+    public static void tryItNow(InfiniThreadBody body) {
+        try {
+            body.body();
+        } catch (Exception e) {
+            System.out.println("Try failed");
+            throw new RuntimeException(e);
+        }
     }
 }

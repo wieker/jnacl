@@ -35,6 +35,8 @@ public class SendTest {
 
         sender1.send("Message from the first client to the second#######################################################################################################################");
         sender2.send("Message from the second client to the first#######################################################################################################################");
+
+        InfiniThreadFactory.tryItNow(() -> { Thread.sleep(1000l); });
     }
 
 }
