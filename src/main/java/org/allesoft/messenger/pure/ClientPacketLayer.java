@@ -13,11 +13,10 @@ public class ClientPacketLayer implements Layer {
     private Socket socket;
     private Layer top;
 
-    public static ClientPacketLayer connectClient(String address, int port, Layer top) {
+    public static ClientPacketLayer connectClient(String address, int port) {
         try {
             ClientPacketLayer layer = new ClientPacketLayer();
             layer.socket = new Socket(address, port);
-            layer.top = top;
             System.out.println("Client started " + layer.socket.toString());
             InfiniThreadFactory.infiniThread(() -> {
                 byte[] buf;
@@ -25,7 +24,9 @@ public class ClientPacketLayer implements Layer {
                 System.out.println("Received by " + layer.getSocket().toString());
                 System.out.println(Hex.HEX.encode(buf));
 
-                top.getWaitingQueue().add(buf);
+                if (layer.top != null) {
+                    layer.top.getWaitingQueue().add(buf);
+                }
             });
             return layer;
         } catch (Exception e) {
@@ -45,5 +46,15 @@ public class ClientPacketLayer implements Layer {
 
     private Socket getSocket() {
         return socket;
+    }
+
+    @Override
+    public void setTop(Layer top) {
+        this.top = top;
+    }
+
+    @Override
+    public void setBottom(Layer layer) {
+
     }
 }

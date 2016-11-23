@@ -10,4 +10,8 @@ public interface Layer {
     void sendPacket(byte[] packet) throws Exception;
 
     BlockingQueue<byte[]> getWaitingQueue();
+
+    void setTop(Layer layer);
+
+    void setBottom(Layer layer);
 }

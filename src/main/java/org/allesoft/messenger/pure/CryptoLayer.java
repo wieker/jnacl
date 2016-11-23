@@ -3,6 +3,7 @@ package org.allesoft.messenger.pure;
 import org.abstractj.kalium.NaCl;
 import org.abstractj.kalium.crypto.Box;
 import org.abstractj.kalium.encoders.Hex;
+import org.abstractj.kalium.keys.KeyPair;
 import org.abstractj.kalium.keys.PublicKey;
 
 import java.security.SecureRandom;
@@ -18,11 +19,10 @@ public class CryptoLayer implements Layer {
     Box box;
     Layer bottom;
 
-    public CryptoLayer(String address, int port, Box box, PublicKey our, PublicKey their) {
-        bottom = ClientPacketLayer.connectClient(address, port, this);
-        this.our = our;
+    public CryptoLayer(KeyPair our, PublicKey their) {
+        this.our = our.getPublicKey();
         this.their = their;
-        this.box = box;
+        this.box = new Box(their, our.getPrivateKey());
         queue = InfiniThreadFactory.infiniThreadWithQueue((packet) -> {
             byte[] nonce = new byte[NaCl.Sodium.NONCE_BYTES];
             byte[] theirKey = new byte[NaCl.Sodium.PUBLICKEY_BYTES];
@@ -53,11 +53,23 @@ public class CryptoLayer implements Layer {
         System.arraycopy(ourKey, 0, packet, pos += nonce.length, ourKey.length);
         System.arraycopy(theirKey, 0, packet, pos += ourKey.length, theirKey.length);
         System.arraycopy(cryptoBody, 0, packet, pos + theirKey.length, cryptoBody.length);
-        bottom.sendPacket(packet);
+        if (bottom != null) {
+            bottom.sendPacket(packet);
+        }
     }
 
     @Override
     public BlockingQueue<byte[]> getWaitingQueue() {
         return queue;
+    }
+
+    @Override
+    public void setTop(Layer layer) {
+
+    }
+
+    @Override
+    public void setBottom(Layer bottom) {
+        this.bottom = bottom;
     }
 }
