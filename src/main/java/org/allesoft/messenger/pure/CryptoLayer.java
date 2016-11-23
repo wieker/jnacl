@@ -18,6 +18,7 @@ public class CryptoLayer implements Layer {
     PublicKey their;
     Box box;
     Layer bottom;
+    Layer top;
 
     public CryptoLayer(KeyPair our, PublicKey their) {
         this.our = our.getPublicKey();
@@ -35,7 +36,7 @@ public class CryptoLayer implements Layer {
             byte[] plain = box.decrypt(nonce, cryptoBody);
             System.out.println(Hex.HEX.encode(plain));
 
-            sendPacket(plain);
+            top.getWaitingQueue().add(plain);
         });
     }
 
@@ -65,7 +66,7 @@ public class CryptoLayer implements Layer {
 
     @Override
     public void setTop(Layer layer) {
-
+        this.top = layer;
     }
 
     @Override

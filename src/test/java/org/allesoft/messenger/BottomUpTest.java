@@ -45,6 +45,8 @@ public class BottomUpTest {
         l2n.setTop(l2m);
         l1m.addPeer(pair2.getPublicKey(), l1);
         l2m.addPeer(pair1.getPublicKey(), l2);
+        l1.setTop(new EchoLayer(l1));
+        l2.setTop(new EchoLayer(l2));
         l1.sendPacket(Hex.HEX.decode("FF77"));
 
         for (;;) {
