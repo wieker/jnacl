@@ -1,20 +1,13 @@
 package org.allesoft.messenger.jclient;
 
-import org.abstractj.kalium.encoders.Hex;
 import org.abstractj.kalium.keys.PublicKey;
-import org.allesoft.messenger.NaCl;
 import com.sun.org.apache.xml.internal.serialize.LineSeparator;
-import org.abstractj.kalium.crypto.Box;
 import org.abstractj.kalium.keys.KeyPair;
-import org.allesoft.messenger.jserver.Daemon;
 import org.allesoft.messenger.pure.*;
 
 import java.io.*;
-import java.net.Socket;
-import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.BlockingQueue;
 
 /**
  * Created by kabramovich on 19.10.2016.

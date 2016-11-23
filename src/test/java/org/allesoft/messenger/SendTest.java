@@ -2,11 +2,8 @@ package org.allesoft.messenger;
 
 import org.abstractj.kalium.crypto.Box;
 import org.abstractj.kalium.encoders.Encoder;
-import org.abstractj.kalium.encoders.Hex;
-import org.abstractj.kalium.keys.KeyPair;
 import org.allesoft.messenger.jclient.*;
 import org.allesoft.messenger.jclient.Client;
-import org.allesoft.messenger.jserver.Daemon;
 import org.allesoft.messenger.pure.*;
 import org.testng.annotations.Test;
 
@@ -16,8 +13,7 @@ import org.testng.annotations.Test;
 public class SendTest {
     @Test
     public void testMsg() {
-        Daemon daemon = new Daemon();
-        daemon.openSocket(6666);
+        Server server = Server.initServer(6666);
 
         Client client1 = new ClientImpl("testC1").initKeys().loadRoster();
         client1.connect("localhost", 6666);
