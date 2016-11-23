@@ -56,10 +56,12 @@ public class TextWin extends JFrame {
                 }
             }
         });
-        conversationArea.addFocusListener(new FocusAdapter() {
+        conversationArea.addKeyListener(new KeyAdapter() {
             @Override
-            public void focusGained(FocusEvent e) {
+            public void keyTyped(KeyEvent e) {
                 newMessageField.requestFocus();
+                String text = newMessageField.getText();
+                newMessageField.setText(text + e.getKeyChar());
             }
         });
 
