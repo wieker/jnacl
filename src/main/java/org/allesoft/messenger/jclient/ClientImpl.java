@@ -8,6 +8,8 @@ import org.allesoft.messenger.pure.*;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Created by kabramovich on 19.10.2016.
@@ -18,6 +20,7 @@ public class ClientImpl extends Client {
     private String baseDirPath;
     private RosterImpl roster;
     CryptoMux muxLayer;
+    Map<String, ChannelMux> muxers = new TreeMap<>();
 
     public ClientImpl(String baseDirPath) {
         this.baseDirPath = baseDirPath;
@@ -111,21 +114,28 @@ public class ClientImpl extends Client {
 
     @Override
     public MessageSender addConversation(String userId, MessageReceiver receiver) {
+        ChannelMux channelMux = getChannelMux(userId);
+        int textChannel = channelMux.addChannel(InfiniThreadFactory.stabLayerWithReceive(channelMux,
+                (packet) -> receiver.receive(new String(packet))));
+        return text -> {
+            InfiniThreadFactory.tryItNow(() -> {
+                channelMux.sendPacket(textChannel, text.getBytes());
+            });
+        };
+    }
+
+    private ChannelMux getChannelMux(String userId) {
+        ChannelMux mux = muxers.get(userId);
+        if (mux != null) {
+            return mux;
+        }
         Layer cryptoLayer = new CryptoLayer(new KeyPair(privateKey), new PublicKey(userId));
         muxLayer.addPeer(new PublicKey(userId), cryptoLayer);
         cryptoLayer.setBottom(muxLayer);
         ChannelMux channelMux = new ChannelMux(cryptoLayer);
         cryptoLayer.setTop(channelMux);
-        int textChannel = channelMux.addChannel(InfiniThreadFactory.stabLayerWithReceive(cryptoLayer,
-                (packet) -> receiver.receive(new String(packet))));
-        return text -> {
-            try {
-                channelMux.sendPacket(textChannel, text.getBytes());
-            } catch (Exception e) {
-                System.out.println("Exception");
-                throw new RuntimeException(e);
-            }
-        };
+        muxers.put(userId, channelMux);
+        return channelMux;
     }
 
     @Override
