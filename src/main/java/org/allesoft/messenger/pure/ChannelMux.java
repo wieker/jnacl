@@ -13,6 +13,10 @@ public class ChannelMux implements Layer {
     BlockingQueue<byte[]> queue;
     Layer[] channels = new Layer[256];
 
+    public static final int TEXT_CHANNEL = 1;
+    public static final int FILE_CHANNEL = 2;
+    public static final int TCP_CHANNEL = 3;
+
     public ChannelMux(Layer bottom) {
         this.bottom = bottom;
         queue = InfiniThreadFactory.infiniThreadWithQueue((packet) -> {

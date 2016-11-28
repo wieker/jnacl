@@ -116,7 +116,7 @@ public class ClientImpl extends Client {
     @Override
     public MessageSender addConversation(String userId, MessageReceiver receiver) {
         ChannelMux channelMux = getChannelMux(userId);
-        int textChannel = 1;
+        int textChannel = ChannelMux.TEXT_CHANNEL;
         channelMux.addChannel(textChannel, InfiniThreadFactory.stabLayerWithReceive(
                 (packet) -> receiver.receive(new String(packet))));
         return text -> {
