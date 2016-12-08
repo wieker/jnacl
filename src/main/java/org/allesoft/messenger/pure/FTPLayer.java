@@ -10,7 +10,7 @@ import java.util.concurrent.BlockingQueue;
 public class FTPLayer implements Layer {
     BlockingQueue<byte[]> queue;
     Layer bottom;
-    FTPLayerState state = FTPLayerState.FREE;
+    ideagitftpLayerState state = ideagitftpLayerState.FREE;
     FileAcceptRequest fileAcceptRequest;
     File fileToTransfer;
     byte[] memoryToTransfer;
@@ -24,14 +24,14 @@ public class FTPLayer implements Layer {
         this.complete = complete;
         queue = InfiniThreadFactory.infiniThreadWithQueue((packet) -> {
             System.out.println("Received packet");
-            if (state.equals(FTPLayerState.FREE) && (byte) FTPModeHeader.START.ordinal() == packet[0] && fileAcceptRequest != null) {
+            if (state.equals(ideagitftpLayerState.FREE) && (byte) FTPModeHeader.START.ordinal() == packet[0] && fileAcceptRequest != null) {
                 long size = ((long) packet[1] << 56) + ((long) packet[2] << 48) + ((long) packet[3] << 40) + ((long) packet[4] << 32) + (packet[5] << 24) + (packet[6] << 16) + (packet[7] << 8) + packet[8];
                 byte[] fileNameCode = new byte[packet.length - 8 - 1];
                 System.arraycopy(packet, 9, fileNameCode, 0, fileNameCode.length);
-                state = FTPLayerState.REQUEST_RECEIVED;
+                state = ideagitftpLayerState.REQUEST_RECEIVED;
                 fileAcceptRequest.accept(this, new String(fileNameCode), (int) size);
             }
-            if (state.equals(FTPLayerState.REQUEST_SENT) && FTPModeHeader.ACCEPT.ordinal() == packet[0]) {
+            if (state.equals(ideagitftpLayerState.REQUEST_SENT) && FTPModeHeader.ACCEPT.ordinal() == packet[0]) {
                 if (fileToTransfer != null) {
                     int size = (int) fileToTransfer.length();
                     int chunks = size / CHUNK_SIZE;
@@ -67,9 +67,9 @@ public class FTPLayer implements Layer {
                 }
                 fileToTransfer = null;
                 memoryToTransfer = null;
-                state = FTPLayerState.FREE;
+                state = ideagitftpLayerState.FREE;
             }
-            if (state.equals(FTPLayerState.TRANSFER) && FTPModeHeader.PART.ordinal() == packet[0]) {
+            if (state.equals(ideagitftpLayerState.TRANSFER) && FTPModeHeader.PART.ordinal() == packet[0]) {
                 if (fileToTransfer != null) {
                     System.out.println("file chunk received");
                     received += packet.length - 1;
@@ -82,7 +82,7 @@ public class FTPLayer implements Layer {
                     complete.complete(this);
                     fileToTransfer = null;
                     memoryToTransfer = null;
-                    state = FTPLayerState.FREE;
+                    state = ideagitftpLayerState.FREE;
                 }
             }
         });
@@ -120,14 +120,14 @@ public class FTPLayer implements Layer {
         packet[8] = (byte) (dataLength & 0xFF);
         System.arraycopy(nameBytes, 0, packet, 9, nameBytes.length);
         bottom.sendPacket(packet);
-        state = FTPLayerState.REQUEST_SENT;
+        state = ideagitftpLayerState.REQUEST_SENT;
     }
 
     public void receive(File file) throws Exception {
         byte[] packet = new byte[1];
         packet[0] = (byte) FTPModeHeader.ACCEPT.ordinal();
         fileToTransfer = file;
-        state = FTPLayerState.TRANSFER;
+        state = ideagitftpLayerState.TRANSFER;
         bottom.sendPacket(packet);
     }
 
@@ -136,7 +136,7 @@ public class FTPLayer implements Layer {
         packet[0] = (byte) FTPModeHeader.ACCEPT.ordinal();
         memoryToTransfer = memory;
         bottom.sendPacket(packet);
-        state = FTPLayerState.TRANSFER;
+        state = ideagitftpLayerState.TRANSFER;
         received = 0;
     }
 
