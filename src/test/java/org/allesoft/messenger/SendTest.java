@@ -101,4 +101,18 @@ public class SendTest {
         InfiniThreadFactory.tryItNow(() -> { Thread.sleep(100000l); });
     }
 
+    @Test
+    public void capture() throws Exception {
+        Capture capture = new Capture();
+        capture.start();
+        Thread.sleep(5000l);
+        capture.stop();
+        while (capture.getAudioBytes() == null) {
+            Thread.sleep(100);
+        }
+        Playback playback = new Playback(capture.getAudioBytes());
+        playback.start();
+        Thread.sleep(5000l);
+    }
+
 }

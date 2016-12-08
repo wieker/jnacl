@@ -1,23 +1,25 @@
 package org.allesoft.messenger;
 
+import org.abstractj.kalium.encoders.Hex;
+
 import javax.sound.sampled.*;
+import java.io.ByteArrayInputStream;
 
 /**
  * Write data to the OutputChannel.
  */
 public class Playback implements Runnable {
 
-    private Audio audio;
+    private byte[] audioBytes;
     SourceDataLine line;
 
     Thread thread;
 
-    public Playback(Audio audio) {
-        this.audio = audio;
+    public Playback(byte[] audioBytes) {
+        this.audioBytes = audioBytes;
     }
 
     public void start() {
-        audio.errStr = null;
         thread = new Thread(this);
         thread.setName("Playback");
         thread.start();
@@ -28,28 +30,17 @@ public class Playback implements Runnable {
     }
 
     private void shutDown(String message) {
-        if ((audio.errStr = message) != null) {
-            System.err.println(audio.errStr);
-        }
+        System.out.println(message);
         if (thread != null) {
             thread = null;
-            audio.captB.setEnabled(true);
-            audio.playB.setText("Play");
         }
     }
 
     public void run() {
 
         // make sure we have something to play
-        if (audio.audioInputStream == null) {
+        if (audioBytes == null) {
             shutDown("No loaded audio to play back");
-            return;
-        }
-        // reset to the beginnning of the stream
-        try {
-            audio.audioInputStream.reset();
-        } catch (Exception e) {
-            shutDown("Unable to reset the stream\n" + e);
             return;
         }
 
@@ -64,12 +55,29 @@ public class Playback implements Runnable {
 
         AudioFormat format = new AudioFormat(encoding, rate, sampleSize, channels, (sampleSize / 8)
                 * channels, rate, bigEndian);
+        int frameSizeInBytes = format.getFrameSize();
+        ByteArrayInputStream bais = new ByteArrayInputStream(audioBytes);
+        AudioInputStream audioInputStream = new AudioInputStream(bais, format, audioBytes.length / frameSizeInBytes);
+        // reset to the beginnning of the stream
+        try {
+            audioInputStream.reset();
+        } catch (Exception e) {
+            shutDown("Unable to reset the stream\n" + e);
+            return;
+        }
+
+        try {
+            audioInputStream.reset();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return;
+        }
 
         AudioInputStream playbackInputStream = AudioSystem.getAudioInputStream(format,
-                audio.audioInputStream);
+                audioInputStream);
 
         if (playbackInputStream == null) {
-            shutDown("Unable to convert stream of format " + audio.audioInputStream + " to format " + format);
+            shutDown("Unable to convert stream of format " + audioInputStream + " to format " + format);
             return;
         }
 
@@ -86,7 +94,7 @@ public class Playback implements Runnable {
 
         try {
             line = (SourceDataLine) AudioSystem.getLine(info);
-            line.open(format, audio.bufSize);
+            line.open(format, 16384);
         } catch (LineUnavailableException ex) {
             shutDown("Unable to open the line: " + ex);
             return;
@@ -94,7 +102,6 @@ public class Playback implements Runnable {
 
         // play back the captured audio data
 
-        int frameSizeInBytes = format.getFrameSize();
         int bufferLengthInFrames = line.getBufferSize() / 8;
         int bufferLengthInBytes = bufferLengthInFrames * frameSizeInBytes;
         byte[] data = new byte[bufferLengthInBytes];
@@ -111,6 +118,8 @@ public class Playback implements Runnable {
                 int numBytesRemaining = numBytesRead;
                 while (numBytesRemaining > 0) {
                     numBytesRemaining -= line.write(data, 0, numBytesRemaining);
+                    System.out.println("Played " + data);
+                    System.out.println(Hex.HEX.encode(data));
                 }
             } catch (Exception e) {
                 shutDown("Error during playback: " + e);

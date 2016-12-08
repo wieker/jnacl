@@ -1,5 +1,7 @@
 package org.allesoft.messenger;
 
+import org.abstractj.kalium.encoders.Hex;
+
 import javax.sound.sampled.*;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -8,19 +10,18 @@ import java.io.IOException;
 /**
  * Reads data from the input channel and writes to the output stream
  */
-class Capture implements Runnable {
+public class Capture implements Runnable {
 
-    private Audio audio;
+    private byte[] audioBytes;
     TargetDataLine line;
 
     Thread thread;
 
-    public Capture(Audio audio) {
-        this.audio = audio;
+    public byte[] getAudioBytes() {
+        return audioBytes;
     }
 
     public void start() {
-        audio.errStr = null;
         thread = new Thread(this);
         thread.setName("Capture");
         thread.start();
@@ -31,18 +32,10 @@ class Capture implements Runnable {
     }
 
     private void shutDown(String message) {
-        if ((audio.errStr = message) != null && thread != null) {
-            thread = null;
-            audio.playB.setEnabled(true);
-            audio.captB.setText("Record");
-            System.err.println(audio.errStr);
-        }
+        thread = null;
     }
 
     public void run() {
-
-        audio.duration = 0;
-        audio.audioInputStream = null;
 
         // define the required attributes for our line,
         // and make sure a compatible line is supported.
@@ -96,6 +89,8 @@ class Capture implements Runnable {
                 break;
             }
             out.write(data, 0, numBytesRead);
+            System.out.println("Recorded " + numBytesRead);
+            System.out.println(Hex.HEX.encode(data));
         }
 
         // we reached the end of the stream.
@@ -114,20 +109,9 @@ class Capture implements Runnable {
 
         // load bytes into the audio input stream for playback
 
-        byte audioBytes[] = out.toByteArray();
-        ByteArrayInputStream bais = new ByteArrayInputStream(audioBytes);
-        audio.audioInputStream = new AudioInputStream(bais, format, audioBytes.length / frameSizeInBytes);
+        audioBytes = out.toByteArray();
 
-        long milliseconds = (long) ((audio.audioInputStream.getFrameLength() * 1000) / format
-                .getFrameRate());
-        audio.duration = milliseconds / 1000.0;
-
-        try {
-            audio.audioInputStream.reset();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return;
-        }
+        System.out.println("Recorded");
 
     }
 } // End class Capture
