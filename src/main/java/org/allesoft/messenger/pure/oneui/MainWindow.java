@@ -8,11 +8,11 @@ import java.awt.*;
 /**
  * Created by kabramovich on 28.11.2016.
  */
-public class ideagitmainwindow extends JFrame {
+public class MainWindow extends JFrame {
 
     private JTable rosterTable = null;
 
-    public ideagitmainwindow(Client client) {
+    public MainWindow(Client client) {
         super("Swing messenger");
         setName("mainWin");
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
