@@ -23,7 +23,10 @@ public class ConversationPanel extends JPanel {
         conversationArea.setText("Conversation with " + userId);
         conversationArea.setEditable(false);
         content.add(conversationArea, BorderLayout.CENTER);
-        MessageSender sender = client.addConversation(userId, text1 -> conversationArea.append(LineSeparator.Unix + text1));
+        MessageSender sender = client.addConversation(userId, text1 -> {
+            conversationArea.append(LineSeparator.Unix + text1);
+            repainter.repaint();
+        });
 
         JPanel sendPanel = new JPanel();
         sendPanel.setLayout(new BorderLayout());

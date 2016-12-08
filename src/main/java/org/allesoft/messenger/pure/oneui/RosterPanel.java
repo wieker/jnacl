@@ -22,7 +22,7 @@ public class RosterPanel extends JPanel {
         add(publicKeyLabel, BorderLayout.NORTH);
 
         RosterTableModel rosterTableModel = new RosterTableModel(client.getRoster(),
-                () -> repaint());
+                () -> repainter.repaint());
         JTable rosterTable = new JTable(rosterTableModel);
         rosterTable.setDefaultRenderer(RosterItemImpl.class,
                 new RosterTableRenderer(rosterTableModel));
