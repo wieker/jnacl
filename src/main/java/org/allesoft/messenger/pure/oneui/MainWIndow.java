@@ -22,9 +22,11 @@ public class MainWindow extends JFrame {
         JPanel rightPanel = new JPanel();
         rightPanel.setLayout(new CardLayout());
         Repainter repainter = () -> {
-            pack();
-            revalidate();
-            repaint();
+            SwingUtilities.invokeLater(() -> {
+                pack();
+                revalidate();
+                repaint();
+            });
         };
         JPanel leftPanel = new RosterPanel(client, new ConversationCardsHolder(client, rightPanel, repainter), repainter);
 
@@ -33,6 +35,5 @@ public class MainWindow extends JFrame {
         add(content);
 
         setVisible(true);
-        repainter.repaint();
     }
 }
