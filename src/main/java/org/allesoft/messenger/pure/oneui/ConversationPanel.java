@@ -28,6 +28,8 @@ public class ConversationPanel extends JPanel {
             repainter.repaint();
         });
 
+        JPanel bottomPanel = new JPanel();
+        bottomPanel.setLayout(new BorderLayout());
         JPanel sendPanel = new JPanel();
         sendPanel.setLayout(new BorderLayout());
         JTextField newMessageField = new JTextField();
@@ -45,7 +47,31 @@ public class ConversationPanel extends JPanel {
             repainter.repaint();
         });
         sendPanel.add(sendButton, BorderLayout.EAST);
-        content.add(sendPanel, BorderLayout.SOUTH);
+        bottomPanel.add(sendPanel, BorderLayout.NORTH);
+
+        JPanel additionalPanel = new JPanel();
+        JButton sendFileButton = new JButton("Send File");
+        sendFileButton.addActionListener((e) -> {
+        });
+        additionalPanel.add(sendFileButton);
+        JButton startSocksClientButton = new JButton("Start SOCKS4 entry point");
+        startSocksClientButton.addActionListener((e) -> {
+        });
+        additionalPanel.add(startSocksClientButton);
+        JButton startSocksServerButton = new JButton("Start SOCKS4 exit point");
+        startSocksServerButton.addActionListener((e) -> {
+        });
+        additionalPanel.add(startSocksServerButton);
+        JButton audioMessageButton = new JButton("Audio message");
+        audioMessageButton.addActionListener((e) -> {
+        });
+        additionalPanel.add(audioMessageButton);
+        JButton videoMessageButton = new JButton("Video message");
+        videoMessageButton.addActionListener((e) -> {
+        });
+        additionalPanel.add(videoMessageButton);
+        bottomPanel.add(additionalPanel, BorderLayout.SOUTH);
+        content.add(bottomPanel, BorderLayout.SOUTH);
 
         newMessageField.addKeyListener(new KeyAdapter() {
             @Override
