@@ -1,17 +1,9 @@
 package org.allesoft.messenger.pure.oneui;
 
-import org.allesoft.messenger.NaCl;
 import org.allesoft.messenger.jclient.Client;
-import org.allesoft.messenger.jclient.RosterItemImpl;
-import org.allesoft.messenger.swingui.AddWin;
-import org.allesoft.messenger.swingui.RosterTableModel;
-import org.allesoft.messenger.swingui.RosterTableRenderer;
-import org.allesoft.messenger.swingui.TextWin;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 
 /**
  * Created by kabramovich on 28.11.2016.
@@ -29,14 +21,18 @@ public class MainWindow extends JFrame {
 
         JPanel rightPanel = new JPanel();
         rightPanel.setLayout(new CardLayout());
-        JPanel leftPanel = new RosterPanel(client, new ConversationCardsHolder(client, rightPanel));
+        Repainter repainter = () -> {
+            pack();
+            revalidate();
+            repaint();
+        };
+        JPanel leftPanel = new RosterPanel(client, new ConversationCardsHolder(client, rightPanel, repainter), repainter);
 
         content.add(leftPanel, BorderLayout.WEST);
         content.add(rightPanel, BorderLayout.EAST);
-
         add(content);
 
-        pack();
         setVisible(true);
+        repainter.repaint();
     }
 }

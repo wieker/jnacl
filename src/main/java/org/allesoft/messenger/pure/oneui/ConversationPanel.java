@@ -14,7 +14,7 @@ import java.awt.event.KeyEvent;
  */
 public class ConversationPanel extends JPanel {
 
-    public ConversationPanel(String userId, Client client) {
+    public ConversationPanel(String userId, Client client, Repainter repainter) {
         JPanel content = new JPanel();
         content.setLayout(new BorderLayout());
         setName(userId);
@@ -39,6 +39,7 @@ public class ConversationPanel extends JPanel {
 
             sender.send(text);
             newMessageField.requestFocus();
+            repainter.repaint();
         });
         sendPanel.add(sendButton, BorderLayout.EAST);
         content.add(sendPanel, BorderLayout.SOUTH);

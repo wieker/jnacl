@@ -5,6 +5,7 @@ import org.allesoft.messenger.jclient.Client;
 import org.allesoft.messenger.jclient.ClientImpl;
 import org.allesoft.messenger.jclient.RosterItemImpl;
 import org.allesoft.messenger.pure.Server;
+import org.allesoft.messenger.pure.oneui.MainWindow;
 
 /**
  * Created by tatyana on 11/23/2016.
@@ -20,7 +21,7 @@ public class DualSwing {
 
     private static Client mainWinBuilder(String arg) {
         Client c = new ClientImpl(arg).initKeys().loadRoster().connect("localhost", 10505);
-        new MainWin(c);
+        new MainWindow(c);
         return c;
     }
 }

@@ -3,10 +3,8 @@ package org.allesoft.messenger.pure.oneui;
 import org.allesoft.messenger.NaCl;
 import org.allesoft.messenger.jclient.Client;
 import org.allesoft.messenger.jclient.RosterItemImpl;
-import org.allesoft.messenger.swingui.AddWin;
 import org.allesoft.messenger.swingui.RosterTableModel;
 import org.allesoft.messenger.swingui.RosterTableRenderer;
-import org.allesoft.messenger.swingui.TextWin;
 
 import javax.swing.*;
 import java.awt.*;
@@ -17,7 +15,7 @@ import java.awt.event.MouseEvent;
  * Created by kabramovich on 28.11.2016.
  */
 public class RosterPanel extends JPanel {
-    public RosterPanel(Client client, ConversationCardsHolder holder) {
+    public RosterPanel(Client client, ConversationCardsHolder holder, Repainter repainter) {
         setLayout(new BorderLayout());
 
         JTextField publicKeyLabel = new JTextField(NaCl.asHex(client.getPublicKey()));
@@ -45,7 +43,7 @@ public class RosterPanel extends JPanel {
         JButton addContactButton = new JButton("Add Contact");
         addContactButton.setName("addContactButton");
         addContactButton.addActionListener( (e) -> {
-
+            holder.add(new AddFriendPanel(rosterTableModel, client));
         });
         bottomPanel.add(addContactButton, BorderLayout.NORTH);
 
