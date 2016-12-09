@@ -6,10 +6,7 @@ import org.allesoft.messenger.NaCl;
 import org.allesoft.messenger.Playback;
 import org.allesoft.messenger.jclient.Client;
 import org.allesoft.messenger.jclient.MessageSender;
-import org.allesoft.messenger.pure.ChannelMux;
-import org.allesoft.messenger.pure.FTPLayer;
-import org.allesoft.messenger.pure.InfiniThreadFactory;
-import org.allesoft.messenger.pure.TCPLayer;
+import org.allesoft.messenger.pure.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -44,6 +41,9 @@ public class ConversationPanel extends JPanel {
             playback.start();
         });
         client.registerChannel(userId, ChannelMux.FILE_CHANNEL, audioMessageLayer);
+
+        AudioLayer audioLayer = new AudioLayer();
+        client.registerChannel(userId, ChannelMux.AUDIO_CHANNEL, audioLayer);
 
         JPanel bottomPanel = new JPanel();
         bottomPanel.setLayout(new BorderLayout());
@@ -95,8 +95,9 @@ public class ConversationPanel extends JPanel {
             });
         });
         additionalPanel.add(audioMessageButton);
-        JButton videoMessageButton = new JButton("Video message");
+        JButton videoMessageButton = new JButton("Audio stream");
         videoMessageButton.addActionListener((e) -> {
+            audioLayer.stream();
         });
         additionalPanel.add(videoMessageButton);
         bottomPanel.add(additionalPanel, BorderLayout.SOUTH);

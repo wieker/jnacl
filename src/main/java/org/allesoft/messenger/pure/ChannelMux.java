@@ -16,6 +16,7 @@ public class ChannelMux implements Layer {
     public static final int TEXT_CHANNEL = 1;
     public static final int FILE_CHANNEL = 2;
     public static final int TCP_CHANNEL = 3;
+    public static final int AUDIO_CHANNEL = 4;
 
     public ChannelMux(Layer bottom) {
         this.bottom = bottom;
