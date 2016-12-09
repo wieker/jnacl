@@ -97,6 +97,7 @@ public class ConversationPanel extends JPanel {
         additionalPanel.add(audioMessageButton);
         JButton videoMessageButton = new JButton("Audio stream");
         videoMessageButton.addActionListener((e) -> {
+            audioLayer.start();
             audioLayer.stream();
         });
         additionalPanel.add(videoMessageButton);

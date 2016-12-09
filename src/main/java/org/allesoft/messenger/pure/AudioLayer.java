@@ -1,15 +1,43 @@
 package org.allesoft.messenger.pure;
 
+import org.allesoft.messenger.AudioCore;
 import org.allesoft.messenger.Capture;
 import org.allesoft.messenger.Playback;
 
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.SourceDataLine;
+import javax.sound.sampled.TargetDataLine;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
 
 /**
  * Created by kabramovich on 09.12.2016.
  */
-public class AudioLayer implements Layer {
+public class AudioLayer extends AudioCore implements Layer {
     Layer bottom;
+    private BlockingQueue<byte[]> queue;
+    private SourceDataLine sourceDataLine;
+
+    public void start() {
+        sourceDataLine = getSourceAudioLine(getAudioFormat());
+    }
+
+    public void stop() {
+        closeAudioLine(sourceDataLine);
+        sourceDataLine = null;
+    }
+
+    public AudioLayer() {
+        queue = InfiniThreadFactory.infiniThreadWithQueue((packet) -> {
+            while (! isVoiceChatActive()) {
+                Thread.sleep(100l);
+            }
+            if (isVoiceChatActive()) {
+                playNext(sourceDataLine, packet);
+            }
+        });
+    }
 
     @Override
     public void sendPacket(byte[] packet) throws Exception {
@@ -18,11 +46,7 @@ public class AudioLayer implements Layer {
 
     @Override
     public BlockingQueue<byte[]> getWaitingQueue() {
-        return InfiniThreadFactory.infiniThreadWithQueue((packet) -> {
-            Playback player = new Playback(packet);
-            player.start();
-            Thread.sleep(100l);
-        });
+        return queue;
     }
 
     @Override
@@ -36,15 +60,25 @@ public class AudioLayer implements Layer {
     }
 
     public void stream() {
+        BlockingQueue<byte[]> bq = InfiniThreadFactory.infiniThreadWithQueue(this::sendPacket);
+
         InfiniThreadFactory.infiniThread(() -> {
-            Capture capture = new Capture();
-            capture.start();
-            InfiniThreadFactory.tryItNow(() -> Thread.sleep(100l));
-            capture.stop();
-            while (capture.getAudioBytes() == null) {
-                InfiniThreadFactory.tryItNow(() -> Thread.sleep(100l));
+            AudioFormat format = getAudioFormat();
+            TargetDataLine line = getTargetAudioLine(format);
+
+            byte[] data = new byte[line.getBufferSize()];
+            int numBytesRead;
+
+            while (isVoiceChatActive()) {
+                numBytesRead = readNext(line, data);
+
+                InfiniThreadFactory.tryItNow(() -> bq.put(data));
             }
-            InfiniThreadFactory.tryItNow(() -> sendPacket(capture.getAudioBytes()));
+            closeAudioLine(line);
         });
+    }
+
+    public boolean isVoiceChatActive() {
+        return sourceDataLine != null;
     }
 }
