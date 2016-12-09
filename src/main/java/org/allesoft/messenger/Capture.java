@@ -38,6 +38,63 @@ public class Capture implements Runnable {
 
     public void run() {
 
+        AudioFormat format = getAudioLine();
+        if (format == null) return;
+
+        // play back the captured audio data
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        byte[] data = startCapture(format);
+        int numBytesRead;
+
+        while (thread != null) {
+            if ((numBytesRead = readNext(data)) == -1) {
+                break;
+            }
+            out.write(data, 0, numBytesRead);
+        }
+        closeLine();
+
+
+        // stop and close the output stream
+        try {
+            out.flush();
+            out.close();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+
+        // load bytes into the audio input stream for playback
+
+        audioBytes = out.toByteArray();
+
+        System.out.println("Recorded");
+
+    }
+
+    private void closeLine() {
+        // we reached the end of the stream.
+        // stop and close the line.
+        line.stop();
+        line.close();
+        line = null;
+    }
+
+    private int readNext(byte[] data) {
+        return line.read(data, 0, data.length);
+    }
+
+    private byte[] startCapture(AudioFormat format) {
+        int frameSizeInBytes = format.getFrameSize();
+        int bufferLengthInFrames = line.getBufferSize() / 8;
+        int bufferLengthInBytes = bufferLengthInFrames * frameSizeInBytes;
+        byte[] data = new byte[bufferLengthInBytes];
+
+        line.start();
+        return data;
+    }
+
+    private AudioFormat getAudioLine() {
+
         // define the required attributes for our line,
         // and make sure a compatible line is supported.
 
@@ -55,7 +112,7 @@ public class Capture implements Runnable {
 
         if (!AudioSystem.isLineSupported(info)) {
             shutDown("Line matching " + info + " not supported.");
-            return;
+            return null;
         }
 
         // get and open the target data line for capture.
@@ -65,52 +122,15 @@ public class Capture implements Runnable {
             line.open(format, line.getBufferSize());
         } catch (LineUnavailableException ex) {
             shutDown("Unable to open the line: " + ex);
-            return;
+            return null;
         } catch (SecurityException ex) {
             shutDown(ex.toString());
             //JavaSound.showInfoDialog();
-            return;
+            return null;
         } catch (Exception ex) {
             shutDown(ex.toString());
-            return;
+            return null;
         }
-
-        // play back the captured audio data
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        int frameSizeInBytes = format.getFrameSize();
-        int bufferLengthInFrames = line.getBufferSize() / 8;
-        int bufferLengthInBytes = bufferLengthInFrames * frameSizeInBytes;
-        byte[] data = new byte[bufferLengthInBytes];
-        int numBytesRead;
-
-        line.start();
-
-        while (thread != null) {
-            if ((numBytesRead = line.read(data, 0, bufferLengthInBytes)) == -1) {
-                break;
-            }
-            out.write(data, 0, numBytesRead);
-        }
-
-        // we reached the end of the stream.
-        // stop and close the line.
-        line.stop();
-        line.close();
-        line = null;
-
-        // stop and close the output stream
-        try {
-            out.flush();
-            out.close();
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-
-        // load bytes into the audio input stream for playback
-
-        audioBytes = out.toByteArray();
-
-        System.out.println("Recorded");
-
+        return format;
     }
 } // End class Capture
