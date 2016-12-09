@@ -118,8 +118,6 @@ public class Playback implements Runnable {
                 int numBytesRemaining = numBytesRead;
                 while (numBytesRemaining > 0) {
                     numBytesRemaining -= line.write(data, 0, numBytesRemaining);
-                    System.out.println("Played " + data);
-                    System.out.println(Hex.HEX.encode(data));
                 }
             } catch (Exception e) {
                 shutDown("Error during playback: " + e);

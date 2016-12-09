@@ -83,7 +83,7 @@ public class ConversationPanel extends JPanel {
         additionalPanel.add(startSocksServerButton);
         JButton audioMessageButton = new JButton("Audio message");
         audioMessageButton.addActionListener((e) -> {
-            SwingUtilities.invokeLater(() -> {
+            InfiniThreadFactory.thread(() -> {
                 Capture capture = new Capture();
                 capture.start();
                 InfiniThreadFactory.tryItNow(() -> { Thread.sleep(5000); });

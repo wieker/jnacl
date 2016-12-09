@@ -98,4 +98,14 @@ public class InfiniThreadFactory {
             throw new RuntimeException(e);
         }
     }
+
+    public static void thread(InfiniThreadBody body) {
+        new Thread(() -> {
+            try {
+                body.body();
+            } catch (Exception e) {
+                System.out.println("Exception: " + e);
+            }
+        }).start();
+    }
 }

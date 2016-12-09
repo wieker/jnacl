@@ -32,6 +32,7 @@ public class Capture implements Runnable {
     }
 
     private void shutDown(String message) {
+        System.out.println(message);
         thread = null;
     }
 
@@ -89,8 +90,6 @@ public class Capture implements Runnable {
                 break;
             }
             out.write(data, 0, numBytesRead);
-            System.out.println("Recorded " + numBytesRead);
-            System.out.println(Hex.HEX.encode(data));
         }
 
         // we reached the end of the stream.
